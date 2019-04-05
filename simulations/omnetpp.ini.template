@@ -1,0 +1,22 @@
+[General]
+network = NETWORK
+#cpu-time-limit = 60s
+sim-time-limit = 3600s
+#debug-on-errors = true
+# parameters of the simulation
+NETWORK.nApps=NAPPS
+NETWORK.appProc[*].nServers=NSERVERS
+# request generation
+NETWORK.appProc[*].source.sendInterval=exponential(INTERVALs)
+NETWORK.appProc[*].source.maxInterval=-1s
+# request processing
+NETWORK.appProc[*].server[*].serviceTime=exponential(TSERVICEs)
+NETWORK.appProc[*].server[*].maxServiceTime=-1s
+NETWORK.appProc[*].server[*].capacity=-1
+# delay
+NETWORK.appProc[*].delay[*].delay=exponential(0.1s)
+NETWORK.appProc[*].delay[*].maxDelay=-1s
+# congControl
+NETWORK.appProc[*].congCtl[*].toCongestionStatusInterval = exponential (30s) 
+NETWORK.appProc[*].congCtl[*].fromCongestionStatusInterval = exponential (10s) 
+NETWORK.appProc[*].congCtl[*].congestionMultiplier = 1.3

@@ -1,0 +1,5 @@
+#!/bin/sh
+cd `dirname $0`
+#../CloudMGn -n .:../src:../../../queueinglib $*
+# for shared lib, use: opp_run -l ../src/CloudMGn -n .:../src $*
+opp_run -l ../libCloudMGn.so -l ../../../queueinglib/libqueueinglib.so -n .:../src:../../../queueinglib $*

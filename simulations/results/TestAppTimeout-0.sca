@@ -1,0 +1,31 @@
+version 2
+run TestAppTimeout-0-20140929-18:14:57-2269
+attr configname TestAppTimeout
+attr datetime 20140929-18:14:57
+attr experiment TestAppTimeout
+attr inifile test2stateApp.ini
+attr iterationvars ""
+attr iterationvars2 $repetition=0
+attr measurement ""
+attr network cloudMGn.simulations.Test2stateApp
+attr processid 2269
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+
+scalar Test2stateApp.server 	rho 	0.41738563776016
+scalar Test2stateApp.server 	congestionRatio 	0
+scalar Test2stateApp.server 	totalJobs 	571
+scalar Test2stateApp.server 	droppedJobsQueue 	0
+scalar Test2stateApp.server 	droppedJobsTimout 	278
+scalar Test2stateApp.server 	droppedJobsTotal 	278
+scalar Test2stateApp.sink 	avg_responseTime_0 	1.323000996087
+scalar Test2stateApp.sink 	avg_delayTime_0 	0
+scalar Test2stateApp.sink 	avg_queuingTime_0 	0.2121756476618
+scalar Test2stateApp.sink 	avg_serviceTime_0 	1.1108253484252
+scalar Test2stateApp.sink 	p90_responseTime_0 	2.5945806111137
+scalar Test2stateApp.sink 	p90_delayTime_0 	0
+scalar Test2stateApp.sink 	p90_queuingTime_0 	0.7073014963005
+scalar Test2stateApp.sink 	p90_serviceTime_0 	2.1671340333065

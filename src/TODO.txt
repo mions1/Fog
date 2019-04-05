@@ -1,0 +1,67 @@
+* Conferma visione
+- Cosa vogliamo dimostrare esattamente?
+Proponiamo tecniche di Saas provider che usano piu' IaaS. Algoritmi per allocazione risorse.
+C'e' predizione del carico e si procede ad allocare.
+Confronti:
+a) capacity allocation basata su soglie
+b) nostro approcci
+
+- Come si integra modello di ottimizzazione nel simulatore (vedi 1)
+Introduciamo queste innovazioni:
+a) Nuovo caso di studio con molteplici IaaS.
+b) Nuovo modello di costo
+
+- Serve modello di costo (2)
+Si 
+
+- Che dati servono per il reporting (3)
+
+* Descrizione sistema:
+- tante VM per datacenter IaaS
+- tante classi di servizio. Ogni VM ha una e una sola classe di servizio
+- quanti client? Client modello aperto. Gestisco singole richieste
+Serve concetto di VM co.locate su singolo server, serve modello di congestione del server.
+Delay center a 2 stati anche per rete
+- come modelliamo le interazioni tra cloud provider?
+Si usa un broker, ma per ora non ci interessa.
+- serve un broker?
+Per ora possiamo fare cloud provider diversi in run di simulazione diversi
+
+* Modello workload
+- trace driven o distribution driven?
+distribution driven
+M --> esponenzial
+G --> lognormale con sigma = 2,3,4 mu + timeout mai oltre 10 sec
+- conosciamo a priori i tempi di servizio o modelliamo nei server e delay center?
+Usiamo range di parametri per decidere come fare --> implementiamo in un momento successivo
+- quante classi? Separiamo le classi? (4)
+- workload statico o dinamico? Nel secondo caso, come si modella il dinamismo?
+Per ora il workload lo posso considerare stazionario. Tanto le predizioni durano un'ora.
+
+Modelo costo VM
+- Serve? Come si definiscono i prezzi? Sono fissi? (2)
+Modello di costo non cambia durante l'ora
+
+Reporting
+- Quali dati ci interessa avere? (3)
+Tempi di risposta delle singole richieste
+- Aggreghiamo dati per classe? (4)
+Si
+divisa per classe e per IaaS
+
+Modello di ottimizzazione
+- Come si integra nel simulatore? (1)
+
+Modello simulatore
+- definire struttura messaggi --> estendiamo Job?
+Questo dipende anche da che modello di qirload e che tipo di dati vogliamo prendere
+- serve dispatcher per le richieste? Che tipo di politica di diaptching usiamo (e.g., WRR)? Come raccogliamo i dati sullo stato dei server?
+Va bene RR normale per datacenter.
+Possibile WRR in versione successiva, ma anche no.
+- come facciamo il server? Server con coda interna o server separato da coda?
+- possiamo tralasciare in prima istanza la politica processor sharing? 
+ Se non vogliamo dati su andamento uso di CPU e richieste sono piccole non ci sono problemi
+- come modelliamo il ritardo nel delay center?
+- Gestiamo modello on/off VM? Che tempi per privisioning/deprovisioning?
+Non di interesse
+- Come modelliamo piu' data center con partizionamento delle VM?
