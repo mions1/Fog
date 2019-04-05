@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.4 from FogJob.msg.
+// Generated file, do not edit! Created by nedtool 5.4 from LoadUpdate.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -26,7 +26,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "FogJob_m.h"
+#include "LoadUpdate_m.h"
 
 namespace omnetpp {
 
@@ -178,34 +178,24 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)
     return out;
 }
 
-Register_Class(FogJob)
+Register_Class(LoadUpdate)
 
-FogJob::FogJob(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
+LoadUpdate::LoadUpdate(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
 {
-    this->startTime = 0;
-    this->queuingTime = 0;
-    this->serviceTime = 0;
-    this->delayTime = 0;
-    this->probeTime = 0;
-    this->slack = 0;
-    this->advTime = 0;
-    this->queueCount = 0;
-    this->delayCount = 0;
-    this->appId = 0;
-    this->id = 0;
-    this->realTime = 0;
+    this->busy = 0;
+    this->queueFull = 0;
 }
 
-FogJob::FogJob(const FogJob& other) : ::omnetpp::cMessage(other)
+LoadUpdate::LoadUpdate(const LoadUpdate& other) : ::omnetpp::cMessage(other)
 {
     copy(other);
 }
 
-FogJob::~FogJob()
+LoadUpdate::~LoadUpdate()
 {
 }
 
-FogJob& FogJob::operator=(const FogJob& other)
+LoadUpdate& LoadUpdate::operator=(const LoadUpdate& other)
 {
     if (this==&other) return *this;
     ::omnetpp::cMessage::operator=(other);
@@ -213,183 +203,53 @@ FogJob& FogJob::operator=(const FogJob& other)
     return *this;
 }
 
-void FogJob::copy(const FogJob& other)
+void LoadUpdate::copy(const LoadUpdate& other)
 {
-    this->startTime = other.startTime;
-    this->queuingTime = other.queuingTime;
-    this->serviceTime = other.serviceTime;
-    this->delayTime = other.delayTime;
-    this->probeTime = other.probeTime;
-    this->slack = other.slack;
-    this->advTime = other.advTime;
-    this->queueCount = other.queueCount;
-    this->delayCount = other.delayCount;
-    this->appId = other.appId;
-    this->id = other.id;
-    this->realTime = other.realTime;
+    this->busy = other.busy;
+    this->queueFull = other.queueFull;
 }
 
-void FogJob::parsimPack(omnetpp::cCommBuffer *b) const
+void LoadUpdate::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
-    doParsimPacking(b,this->startTime);
-    doParsimPacking(b,this->queuingTime);
-    doParsimPacking(b,this->serviceTime);
-    doParsimPacking(b,this->delayTime);
-    doParsimPacking(b,this->probeTime);
-    doParsimPacking(b,this->slack);
-    doParsimPacking(b,this->advTime);
-    doParsimPacking(b,this->queueCount);
-    doParsimPacking(b,this->delayCount);
-    doParsimPacking(b,this->appId);
-    doParsimPacking(b,this->id);
-    doParsimPacking(b,this->realTime);
+    doParsimPacking(b,this->busy);
+    doParsimPacking(b,this->queueFull);
 }
 
-void FogJob::parsimUnpack(omnetpp::cCommBuffer *b)
+void LoadUpdate::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
-    doParsimUnpacking(b,this->startTime);
-    doParsimUnpacking(b,this->queuingTime);
-    doParsimUnpacking(b,this->serviceTime);
-    doParsimUnpacking(b,this->delayTime);
-    doParsimUnpacking(b,this->probeTime);
-    doParsimUnpacking(b,this->slack);
-    doParsimUnpacking(b,this->advTime);
-    doParsimUnpacking(b,this->queueCount);
-    doParsimUnpacking(b,this->delayCount);
-    doParsimUnpacking(b,this->appId);
-    doParsimUnpacking(b,this->id);
-    doParsimUnpacking(b,this->realTime);
+    doParsimUnpacking(b,this->busy);
+    doParsimUnpacking(b,this->queueFull);
 }
 
-::omnetpp::simtime_t FogJob::getStartTime() const
+double LoadUpdate::getBusy() const
 {
-    return this->startTime;
+    return this->busy;
 }
 
-void FogJob::setStartTime(::omnetpp::simtime_t startTime)
+void LoadUpdate::setBusy(double busy)
 {
-    this->startTime = startTime;
+    this->busy = busy;
 }
 
-::omnetpp::simtime_t FogJob::getQueuingTime() const
+int LoadUpdate::getQueueFull() const
 {
-    return this->queuingTime;
+    return this->queueFull;
 }
 
-void FogJob::setQueuingTime(::omnetpp::simtime_t queuingTime)
+void LoadUpdate::setQueueFull(int queueFull)
 {
-    this->queuingTime = queuingTime;
+    this->queueFull = queueFull;
 }
 
-::omnetpp::simtime_t FogJob::getServiceTime() const
-{
-    return this->serviceTime;
-}
-
-void FogJob::setServiceTime(::omnetpp::simtime_t serviceTime)
-{
-    this->serviceTime = serviceTime;
-}
-
-::omnetpp::simtime_t FogJob::getDelayTime() const
-{
-    return this->delayTime;
-}
-
-void FogJob::setDelayTime(::omnetpp::simtime_t delayTime)
-{
-    this->delayTime = delayTime;
-}
-
-::omnetpp::simtime_t FogJob::getProbeTime() const
-{
-    return this->probeTime;
-}
-
-void FogJob::setProbeTime(::omnetpp::simtime_t probeTime)
-{
-    this->probeTime = probeTime;
-}
-
-::omnetpp::simtime_t FogJob::getSlack() const
-{
-    return this->slack;
-}
-
-void FogJob::setSlack(::omnetpp::simtime_t slack)
-{
-    this->slack = slack;
-}
-
-::omnetpp::simtime_t FogJob::getAdvTime() const
-{
-    return this->advTime;
-}
-
-void FogJob::setAdvTime(::omnetpp::simtime_t advTime)
-{
-    this->advTime = advTime;
-}
-
-int FogJob::getQueueCount() const
-{
-    return this->queueCount;
-}
-
-void FogJob::setQueueCount(int queueCount)
-{
-    this->queueCount = queueCount;
-}
-
-int FogJob::getDelayCount() const
-{
-    return this->delayCount;
-}
-
-void FogJob::setDelayCount(int delayCount)
-{
-    this->delayCount = delayCount;
-}
-
-int FogJob::getAppId() const
-{
-    return this->appId;
-}
-
-void FogJob::setAppId(int appId)
-{
-    this->appId = appId;
-}
-
-int FogJob::getId() const
-{
-    return this->id;
-}
-
-void FogJob::setId(int id)
-{
-    this->id = id;
-}
-
-int FogJob::getRealTime() const
-{
-    return this->realTime;
-}
-
-void FogJob::setRealTime(int realTime)
-{
-    this->realTime = realTime;
-}
-
-class FogJobDescriptor : public omnetpp::cClassDescriptor
+class loadUpdateDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertynames;
   public:
-    FogJobDescriptor();
-    virtual ~FogJobDescriptor();
+    loadUpdateDescriptor();
+    virtual ~loadUpdateDescriptor();
 
     virtual bool doesSupport(omnetpp::cObject *obj) const override;
     virtual const char **getPropertyNames() const override;
@@ -411,24 +271,24 @@ class FogJobDescriptor : public omnetpp::cClassDescriptor
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
 };
 
-Register_ClassDescriptor(FogJobDescriptor)
+Register_ClassDescriptor(loadUpdateDescriptor)
 
-FogJobDescriptor::FogJobDescriptor() : omnetpp::cClassDescriptor("fog::FogJob", "omnetpp::cMessage")
+loadUpdateDescriptor::loadUpdateDescriptor() : omnetpp::cClassDescriptor("fog::loadUpdate", "omnetpp::cMessage")
 {
     propertynames = nullptr;
 }
 
-FogJobDescriptor::~FogJobDescriptor()
+loadUpdateDescriptor::~loadUpdateDescriptor()
 {
     delete[] propertynames;
 }
 
-bool FogJobDescriptor::doesSupport(omnetpp::cObject *obj) const
+bool loadUpdateDescriptor::doesSupport(omnetpp::cObject *obj) const
 {
-    return dynamic_cast<FogJob *>(obj)!=nullptr;
+    return dynamic_cast<LoadUpdate *>(obj)!=nullptr;
 }
 
-const char **FogJobDescriptor::getPropertyNames() const
+const char **loadUpdateDescriptor::getPropertyNames() const
 {
     if (!propertynames) {
         static const char *names[] = {  nullptr };
@@ -439,19 +299,19 @@ const char **FogJobDescriptor::getPropertyNames() const
     return propertynames;
 }
 
-const char *FogJobDescriptor::getProperty(const char *propertyname) const
+const char *loadUpdateDescriptor::getProperty(const char *propertyname) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : nullptr;
 }
 
-int FogJobDescriptor::getFieldCount() const
+int loadUpdateDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 12+basedesc->getFieldCount() : 12;
+    return basedesc ? 2+basedesc->getFieldCount() : 2;
 }
 
-unsigned int FogJobDescriptor::getFieldTypeFlags(int field) const
+unsigned int loadUpdateDescriptor::getFieldTypeFlags(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -462,21 +322,11 @@ unsigned int FogJobDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
     };
-    return (field>=0 && field<12) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
-const char *FogJobDescriptor::getFieldName(int field) const
+const char *loadUpdateDescriptor::getFieldName(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -485,42 +335,22 @@ const char *FogJobDescriptor::getFieldName(int field) const
         field -= basedesc->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "startTime",
-        "queuingTime",
-        "serviceTime",
-        "delayTime",
-        "probeTime",
-        "slack",
-        "advTime",
-        "queueCount",
-        "delayCount",
-        "appId",
-        "id",
-        "realTime",
+        "busy",
+        "queueFull",
     };
-    return (field>=0 && field<12) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
 }
 
-int FogJobDescriptor::findField(const char *fieldName) const
+int loadUpdateDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "startTime")==0) return base+0;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queuingTime")==0) return base+1;
-    if (fieldName[0]=='s' && strcmp(fieldName, "serviceTime")==0) return base+2;
-    if (fieldName[0]=='d' && strcmp(fieldName, "delayTime")==0) return base+3;
-    if (fieldName[0]=='p' && strcmp(fieldName, "probeTime")==0) return base+4;
-    if (fieldName[0]=='s' && strcmp(fieldName, "slack")==0) return base+5;
-    if (fieldName[0]=='a' && strcmp(fieldName, "advTime")==0) return base+6;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queueCount")==0) return base+7;
-    if (fieldName[0]=='d' && strcmp(fieldName, "delayCount")==0) return base+8;
-    if (fieldName[0]=='a' && strcmp(fieldName, "appId")==0) return base+9;
-    if (fieldName[0]=='i' && strcmp(fieldName, "id")==0) return base+10;
-    if (fieldName[0]=='r' && strcmp(fieldName, "realTime")==0) return base+11;
+    if (fieldName[0]=='b' && strcmp(fieldName, "busy")==0) return base+0;
+    if (fieldName[0]=='q' && strcmp(fieldName, "queueFull")==0) return base+1;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
-const char *FogJobDescriptor::getFieldTypeString(int field) const
+const char *loadUpdateDescriptor::getFieldTypeString(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -529,23 +359,13 @@ const char *FogJobDescriptor::getFieldTypeString(int field) const
         field -= basedesc->getFieldCount();
     }
     static const char *fieldTypeStrings[] = {
-        "simtime_t",
-        "simtime_t",
-        "simtime_t",
-        "simtime_t",
-        "simtime_t",
-        "simtime_t",
-        "simtime_t",
-        "int",
-        "int",
-        "int",
-        "int",
+        "double",
         "int",
     };
-    return (field>=0 && field<12) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
 }
 
-const char **FogJobDescriptor::getFieldPropertyNames(int field) const
+const char **loadUpdateDescriptor::getFieldPropertyNames(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -558,7 +378,7 @@ const char **FogJobDescriptor::getFieldPropertyNames(int field) const
     }
 }
 
-const char *FogJobDescriptor::getFieldProperty(int field, const char *propertyname) const
+const char *loadUpdateDescriptor::getFieldProperty(int field, const char *propertyname) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -571,7 +391,7 @@ const char *FogJobDescriptor::getFieldProperty(int field, const char *propertyna
     }
 }
 
-int FogJobDescriptor::getFieldArraySize(void *object, int field) const
+int loadUpdateDescriptor::getFieldArraySize(void *object, int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -579,13 +399,13 @@ int FogJobDescriptor::getFieldArraySize(void *object, int field) const
             return basedesc->getFieldArraySize(object, field);
         field -= basedesc->getFieldCount();
     }
-    FogJob *pp = (FogJob *)object; (void)pp;
+    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-const char *FogJobDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
+const char *loadUpdateDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -593,13 +413,13 @@ const char *FogJobDescriptor::getFieldDynamicTypeString(void *object, int field,
             return basedesc->getFieldDynamicTypeString(object,field,i);
         field -= basedesc->getFieldCount();
     }
-    FogJob *pp = (FogJob *)object; (void)pp;
+    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
     switch (field) {
         default: return nullptr;
     }
 }
 
-std::string FogJobDescriptor::getFieldValueAsString(void *object, int field, int i) const
+std::string loadUpdateDescriptor::getFieldValueAsString(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -607,25 +427,15 @@ std::string FogJobDescriptor::getFieldValueAsString(void *object, int field, int
             return basedesc->getFieldValueAsString(object,field,i);
         field -= basedesc->getFieldCount();
     }
-    FogJob *pp = (FogJob *)object; (void)pp;
+    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
     switch (field) {
-        case 0: return simtime2string(pp->getStartTime());
-        case 1: return simtime2string(pp->getQueuingTime());
-        case 2: return simtime2string(pp->getServiceTime());
-        case 3: return simtime2string(pp->getDelayTime());
-        case 4: return simtime2string(pp->getProbeTime());
-        case 5: return simtime2string(pp->getSlack());
-        case 6: return simtime2string(pp->getAdvTime());
-        case 7: return long2string(pp->getQueueCount());
-        case 8: return long2string(pp->getDelayCount());
-        case 9: return long2string(pp->getAppId());
-        case 10: return long2string(pp->getId());
-        case 11: return long2string(pp->getRealTime());
+        case 0: return double2string(pp->getBusy());
+        case 1: return long2string(pp->getQueueFull());
         default: return "";
     }
 }
 
-bool FogJobDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
+bool loadUpdateDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -633,25 +443,15 @@ bool FogJobDescriptor::setFieldValueAsString(void *object, int field, int i, con
             return basedesc->setFieldValueAsString(object,field,i,value);
         field -= basedesc->getFieldCount();
     }
-    FogJob *pp = (FogJob *)object; (void)pp;
+    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
     switch (field) {
-        case 0: pp->setStartTime(string2simtime(value)); return true;
-        case 1: pp->setQueuingTime(string2simtime(value)); return true;
-        case 2: pp->setServiceTime(string2simtime(value)); return true;
-        case 3: pp->setDelayTime(string2simtime(value)); return true;
-        case 4: pp->setProbeTime(string2simtime(value)); return true;
-        case 5: pp->setSlack(string2simtime(value)); return true;
-        case 6: pp->setAdvTime(string2simtime(value)); return true;
-        case 7: pp->setQueueCount(string2long(value)); return true;
-        case 8: pp->setDelayCount(string2long(value)); return true;
-        case 9: pp->setAppId(string2long(value)); return true;
-        case 10: pp->setId(string2long(value)); return true;
-        case 11: pp->setRealTime(string2long(value)); return true;
+        case 0: pp->setBusy(string2double(value)); return true;
+        case 1: pp->setQueueFull(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *FogJobDescriptor::getFieldStructName(int field) const
+const char *loadUpdateDescriptor::getFieldStructName(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -664,7 +464,7 @@ const char *FogJobDescriptor::getFieldStructName(int field) const
     };
 }
 
-void *FogJobDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
+void *loadUpdateDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -672,7 +472,7 @@ void *FogJobDescriptor::getFieldStructValuePointer(void *object, int field, int 
             return basedesc->getFieldStructValuePointer(object, field, i);
         field -= basedesc->getFieldCount();
     }
-    FogJob *pp = (FogJob *)object; (void)pp;
+    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
     switch (field) {
         default: return nullptr;
     }

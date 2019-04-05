@@ -80,10 +80,10 @@ void FogPU::initialize()
     totalJobs = 0;
     droppedJobsQueue = 0;
     droppedJobsTimeout = 0;
+    loadUpdate->setBusy( (double)busy+queue.getLength() );
     endServiceMsg = new cMessage("end-service");
     contextSwitchMsg = new cMessage("context-switch");
     timeoutMsg = new cMessage("timeout");
-    loadUpdate = new cMessage("loadUpdate");
     dropUpdate = new cMessage("dropUpdate");
     fifo = par("fifo");
     capacity = par("capacity");
@@ -233,7 +233,6 @@ void FogPU::processCloudAppJobMessage(cMessage *msg)
         if (capacity >= 0 && queue.getLength() >= capacity)
         {
             EV << "Capacity full! Job dropped.\n";
-            loadUpdate = new cMessage("loadUpdate", 1);
             send(loadUpdate, "loadUpdate");
             //if (ev.isGUI()) bubble("Dropped!");
             //emit(droppedSignal, 1);
@@ -417,7 +416,7 @@ void FogPU::endService(FogJob *job)
     if (!checkTimeoutExpired(job))
     {
         send(job, "out");
-        loadUpdate = new cMessage("loadUpdate", 0);
+        loadUpdate->setBusy(0);
         send(loadUpdate, "loadUpdate");
     }
     else{
@@ -550,6 +549,7 @@ void FogPU::changeState(int transition)
             } // else {changeState(BUSY2BUSY);}
             break;
     }
+    //loadUpdate->setBusy((double)busy+queue.getLength());
 }
 
 void FogPU::finish()

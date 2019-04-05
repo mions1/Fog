@@ -34,6 +34,7 @@ namespace fog {
  *     simtime_t delayTime;    	// total time spent in delay modules
  *     simtime_t probeTime;		// time passed waiting for probe
  *     simtime_t slack;			//deadline for SLA
+ *     simtime_t advTime;			//advice service time. 
  * 
  *     int queueCount;             // the number of queue modules visited by the job
  *     int delayCount;             // the number of delay modules visited by the job
@@ -52,6 +53,7 @@ class FogJob : public ::omnetpp::cMessage
     ::omnetpp::simtime_t delayTime;
     ::omnetpp::simtime_t probeTime;
     ::omnetpp::simtime_t slack;
+    ::omnetpp::simtime_t advTime;
     int queueCount;
     int delayCount;
     int appId;
@@ -87,6 +89,8 @@ class FogJob : public ::omnetpp::cMessage
     virtual void setProbeTime(::omnetpp::simtime_t probeTime);
     virtual ::omnetpp::simtime_t getSlack() const;
     virtual void setSlack(::omnetpp::simtime_t slack);
+    virtual ::omnetpp::simtime_t getAdvTime() const;
+    virtual void setAdvTime(::omnetpp::simtime_t advTime);
     virtual int getQueueCount() const;
     virtual void setQueueCount(int queueCount);
     virtual int getDelayCount() const;

@@ -40,12 +40,14 @@ OBJS = \
     $O/FogPUTS.o \
     $O/FogSource.o \
     $O/CloudCongestionUpdate_m.o \
-    $O/FogJob_m.o
+    $O/FogJob_m.o \
+    $O/LoadUpdate_m.o
 
 # Message files
 MSGFILES = \
     CloudCongestionUpdate.msg \
-    FogJob.msg
+    FogJob.msg \
+    LoadUpdate.msg
 
 # SM files
 SMFILES =

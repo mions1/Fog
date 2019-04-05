@@ -15,6 +15,7 @@
 #include <omnetpp/cmsgpar.h>
 #include <omnetpp/cqueue.h>
 #include "../FogJob_m.h"
+#include "../LoadUpdate_m.h"
 
 using namespace omnetpp;
 
@@ -37,7 +38,7 @@ class FogPU : public cSimpleModule
         cMessage *endServiceMsg;
         cMessage *contextSwitchMsg;
         cMessage *timeoutMsg;
-        cMessage *loadUpdate;
+        LoadUpdate *loadUpdate;
         cMessage *dropUpdate;
         cQueue queue;
         //int capacity;
