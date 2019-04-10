@@ -1,25 +1,23 @@
 ../out/gcc-release/src/FogDispatcherLoad.o: FogDispatcherLoad.cc \
- headers/FogDispatcherLoad.h \
+ FogDispatcherLoad.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp.h \
- FogJob_m.h headers/FogPU.h headers/../../../queueinglib/QueueingDefs.h \
+ FogJob_m.h FogPU.h ../../queueinglib/QueueingDefs.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cmsgpar.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cqueue.h \
- headers/../FogJob_m.h headers/../LoadUpdate_m.h
+ LoadUpdate_m.h
 
-headers/FogDispatcherLoad.h:
+FogDispatcherLoad.h:
 
 /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp.h:
 
 FogJob_m.h:
 
-headers/FogPU.h:
+FogPU.h:
 
-headers/../../../queueinglib/QueueingDefs.h:
+../../queueinglib/QueueingDefs.h:
 
 /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cmsgpar.h:
 
 /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cqueue.h:
 
-headers/../FogJob_m.h:
-
-headers/../LoadUpdate_m.h:
+LoadUpdate_m.h:

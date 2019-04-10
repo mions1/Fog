@@ -7,12 +7,15 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
+
+import org.omnetpp.queueing.Merge;
+
 
 //
 // A subset of VMs processing requests of the same app
 //
-module FogProcessingDelay
+module FogProcessingDelayPerServerTS
 {
     parameters:
         @display("i=block/network");
@@ -28,7 +31,7 @@ module FogProcessingDelay
         server[*].maxServiceTime = default(-1s);
         server[*].timeout = timeout;
         // delay parameters
-        delay.timeout = timeout;
+        delay[*].timeout = timeout;
        	//server.fifo=true
        	//server.capacity=-1
     gates:
@@ -38,14 +41,17 @@ module FogProcessingDelay
         // FIXME: should add also
         server[nServers]: FogPUTS;
         dispatcher: FogDispatcherRR;
-        delay: CloudDelayCenter;
-        congCtl: CloudCongestionControl;
+        delay[nServers]: CloudDelayCenter;
+        congCtl[nServers]: CloudCongestionControl;
+        merge: Merge;
     connections:
         source.out --> dispatcher.in;
         for i=0..nServers-1 {
             dispatcher.out++ --> server[i].in++;
-            server[i].out --> delay.in++;
-            congCtl.congestionControl[i] --> server[i].congestionControl;
+            server[i].out --> delay[i].in++;
+            congCtl[i].congestionControl++ --> server[i].congestionControl;
+            congCtl[i].congestionControl++ --> delay[i].congestionControl;
+            delay[i].out --> merge.in++;
         }
-        delay.out --> out;
+        merge.out --> out;
 }

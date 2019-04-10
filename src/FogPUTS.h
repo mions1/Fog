@@ -11,10 +11,10 @@
 #define __CLOUDAPPSERVER_H
 
 #include <omnetpp.h>
-#include "../../../queueinglib/QueueingDefs.h"
+#include "../../queueinglib/QueueingDefs.h"
 #include <omnetpp/cmsgpar.h>
 #include <omnetpp/cqueue.h>
-#include "../FogJob_m.h"
+#include "FogJob_m.h"
 
 using namespace omnetpp;
 

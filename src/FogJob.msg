@@ -26,12 +26,13 @@ message FogJob
     simtime_t delayTime;    	// total time spent in delay modules
     simtime_t probeTime;		// time passed waiting for probe
     simtime_t slack;			//deadline for SLA
-    simtime_t advTime;			//advice service time. 
+	simtime_t suggestedTime;	//suggested service time. 
     
     int queueCount;             // the number of queue modules visited by the job
     int delayCount;             // the number of delay modules visited by the job
     int appId;					// ID of the considered cloud App
     int id;						// id of the msg
     int realTime;				// flag realtime, if 1-> drop job when SLA expires, if 0-> no drop
+	int multiHop;				// flag multiHop, if 1-> job can be forwarded
 }
 

@@ -34,13 +34,14 @@ namespace fog {
  *     simtime_t delayTime;    	// total time spent in delay modules
  *     simtime_t probeTime;		// time passed waiting for probe
  *     simtime_t slack;			//deadline for SLA
- *     simtime_t advTime;			//advice service time. 
+ *     simtime_t suggestedTime;	//suggested service time. 
  * 
  *     int queueCount;             // the number of queue modules visited by the job
  *     int delayCount;             // the number of delay modules visited by the job
  *     int appId;					// ID of the considered cloud App
  *     int id;						// id of the msg
  *     int realTime;				// flag realtime, if 1-> drop job when SLA expires, if 0-> no drop
+ *     int multiHop;				// flag multiHop, if 1-> job can be forwarded
  * }
  * </pre>
  */
@@ -53,12 +54,13 @@ class FogJob : public ::omnetpp::cMessage
     ::omnetpp::simtime_t delayTime;
     ::omnetpp::simtime_t probeTime;
     ::omnetpp::simtime_t slack;
-    ::omnetpp::simtime_t advTime;
+    ::omnetpp::simtime_t suggestedTime;
     int queueCount;
     int delayCount;
     int appId;
     int id;
     int realTime;
+    int multiHop;
 
   private:
     void copy(const FogJob& other);
@@ -89,8 +91,8 @@ class FogJob : public ::omnetpp::cMessage
     virtual void setProbeTime(::omnetpp::simtime_t probeTime);
     virtual ::omnetpp::simtime_t getSlack() const;
     virtual void setSlack(::omnetpp::simtime_t slack);
-    virtual ::omnetpp::simtime_t getAdvTime() const;
-    virtual void setAdvTime(::omnetpp::simtime_t advTime);
+    virtual ::omnetpp::simtime_t getSuggestedTime() const;
+    virtual void setSuggestedTime(::omnetpp::simtime_t suggestedTime);
     virtual int getQueueCount() const;
     virtual void setQueueCount(int queueCount);
     virtual int getDelayCount() const;
@@ -101,6 +103,8 @@ class FogJob : public ::omnetpp::cMessage
     virtual void setId(int id);
     virtual int getRealTime() const;
     virtual void setRealTime(int realTime);
+    virtual int getMultiHop() const;
+    virtual void setMultiHop(int multiHop);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const FogJob& obj) {obj.parsimPack(b);}

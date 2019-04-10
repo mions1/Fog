@@ -1,5 +1,5 @@
 // designate the NED package of this folder
-package ned;
+package fog;
 
 // namespace of module C++ classes
 @namespace(fog);

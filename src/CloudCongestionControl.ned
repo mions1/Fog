@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
 
 //
 // A queue with a built-in server

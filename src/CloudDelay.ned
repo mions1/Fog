@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
 
 //
 // A block that delays incoming messages by some time. The delay time is

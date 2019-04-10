@@ -15,8 +15,8 @@
 
 package fog.simulations;
 
-import ned.FogProcessingDelayPerServerTS;
-import ned.CloudSink;
+import fog.FogProcessingDelayPerServerTS;
+import fog.CloudSink;
 
 
 //

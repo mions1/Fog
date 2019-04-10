@@ -13,21 +13,17 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package ned;
+package fog;
 
 //
-// TODO auto-generated module
+// Consumes received messages and collects statistics
 //
-simple FogDispatcherLoad
+simple CloudSink
 {
-        parameters:
-        volatile int fanOut;
-        @display("i=block/fork");
-        
+    parameters:
+        @display("i=block/sink");
+        // FIXME: should use a map and make this parameter unrequired
+        int maxApps;
     gates:
         input in[];
-        input localLoad[];
-        input outerLoad[];
-        output probeOuterLoad[];
-        output out[];
 }

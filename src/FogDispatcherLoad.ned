@@ -13,12 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
-// TODO generated message class
-//
+package fog;
 
-namespace fog;
-
-message loadUpdate {
-	int status;					//Status load 0->idle, 1-> busy, >1 with queue
+//
+// TODO auto-generated module
+//
+simple FogDispatcherLoad
+{
+        parameters:
+        volatile int fanOut;
+        @display("i=block/fork");
+        
+    gates:
+        input in[];
+        input localLoad[];
+        input outerLoad[];
+        output probeOuterLoad[];
+        output out[];
 }

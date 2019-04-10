@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "headers/FogSource.h"
+#include "FogSource.h"
 #include "FogJob_m.h"
 
 namespace fog {
@@ -37,6 +37,11 @@ void FogSource::initialize()
     scheduleAt(simTime(), timerMessage);
 }
 
+/**
+ * Gestione la creazione del job da parte della sorgente
+ * Quando il timer scatta viene creato il job, inizializzato ed inviato 'fuori'
+ * Viene schedulato il prossimo timer
+ */
 void FogSource::handleMessage(cMessage *msg)
 {
     ASSERT(msg==timerMessage);
@@ -48,8 +53,7 @@ void FogSource::handleMessage(cMessage *msg)
     job->setServiceTime(0.0);
     job->setDelayTime(0.0);
     job->setSlack(par("slack").doubleValue()); //Poi andrà calcolato in qualche modo
-    job->setAdvTime(-1);
-    job->setAdvTime(par("advTime").doubleValue());
+    job->setSuggestedTime(par("suggestedTime").doubleValue());
     job->setQueueCount(0);
     job->setDelayCount(0);
     job->setAppId(par("appId"));

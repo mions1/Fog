@@ -7,10 +7,10 @@
 // `license' for details on this and other legal matters.
 //
 
-#include "headers/CloudDelayCenter.h"
+#include "CloudDelayCenter.h"
 #include "FogJob_m.h"
 #include "CloudCongestionUpdate_m.h"
-#include "headers/FogSource.h"
+#include "FogSource.h"
 
 #define CONGESTIONGATENAME "congestionControl"
 

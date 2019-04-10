@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
 
 //
 // Forks a job to one child per output. The children can be joined together

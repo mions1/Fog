@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
 
 import org.omnetpp.queueing.Merge;
 

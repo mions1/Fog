@@ -7,7 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
-#include "headers/FogPU.h"
+#include "FogPU.h"
 #include "FogJob_m.h"
 #include "CloudCongestionUpdate_m.h"
 
@@ -93,6 +93,11 @@ void FogPU::initialize()
     timeout = par("timeout");
 }
 
+/**
+ * Schedulo il prossimo evento
+ * Se il tempo rimanente al job è < timeSlice (in altre parole ha praticamente finito) allora schedulo la fine del job
+ * Altrimenti, schedulo il cambio di contesto
+ */
 void FogPU::scheduleNextEvent()
 {
     // Schedule context switch or end of service for current job
@@ -160,6 +165,10 @@ void FogPU::processCloudCongestionUpdateMessage(cMessage *msg)
     }
 }
 
+/**
+ * Cambio il contesto (quindi il job in esecuzione)
+ * Se la coda non è vuota, scambio l'attuale processo in esecuzione con uno in coda
+ */
 void FogPU::processContextSwitchMessage(cMessage *msg)
 {
     EV << "processContextSwitchMessage " << msg << "(job serviced=" << jobServiced->getId() << ", qlen=" << queue.getLength() << ")\n";
@@ -233,6 +242,8 @@ void FogPU::processCloudAppJobMessage(cMessage *msg)
         if (capacity >= 0 && queue.getLength() >= capacity)
         {
             EV << "Capacity full! Job dropped.\n";
+            loadUpdate->setQueueFull(1);
+            loadUpdate->setBusy( (double)busy+queue.getLength() );
             send(loadUpdate, "loadUpdate");
             //if (ev.isGUI()) bubble("Dropped!");
             //emit(droppedSignal, 1);
@@ -260,6 +271,8 @@ void FogPU::processTimeoutMessage(cMessage *msg)
         removeExpiredJobs();
         if (queue.isEmpty())
         {
+            loadUpdate->setQueueFull(0);
+            loadUpdate->setBusy( (double)busy+queue.getLength() );
             jobServiced = NULL;
             //emit(busySignal, 0);
             dropUpdate = new cMessage("dropUpdate", 2);
@@ -359,6 +372,9 @@ void FogPU::handleMessage(cMessage *msg)
     //if (ev.isGUI()) getDisplayString().setTagArg("i",1, !jobServiced ? "" : "cyan3");
 }
 
+/**
+ * Prende un job dalla coda dalla testa se FIFO, dalla coda altrimenti
+ */
 FogJob *FogPU::getFromQueue()
 {
     // we assume that no expired jobs are present in the list
@@ -387,6 +403,7 @@ int FogPU::getCapacity()
 {
     return this->capacity;
 }
+
 simtime_t FogPU::setupService(FogJob *job)
 {
     // gather initial queueing time statistics
@@ -403,6 +420,11 @@ simtime_t FogPU::setupService(FogJob *job)
     return t;
 }
 
+/**
+ * Quando un job ha finito la sua esecuzione
+ * Se non è scaduto ok
+ * Se è scaduto viene droppato
+ */
 void FogPU::endService(FogJob *job)
 {
     EV << "Finishing service of " << job->getName() << endl;
@@ -425,6 +447,10 @@ void FogPU::endService(FogJob *job)
     }
 }
 
+/**
+ * Ripristino un job dalla coda all'esecuzione
+ * Imposto il tempo di quanto è stato in coda
+ */
 void FogPU::resumeService(FogJob *job)
 {
     simtime_t now, ts, d;
@@ -436,6 +462,10 @@ void FogPU::resumeService(FogJob *job)
     setTimeout(job);
 }
 
+/**
+ * Fermo l'attuale processo (ad es. per il cambio contesto)
+ * Imposto il timeService al timeService effettuato fin'ora + il tempo effettuato nell'ultima esecuzione
+ */
 void FogPU::stopService(FogJob *job)
 {
     simtime_t now, ts, d;
@@ -447,6 +477,10 @@ void FogPU::stopService(FogJob *job)
     cancelTimeout(job);
 }
 
+/**
+ * Controllo se il job è in timeout
+ * Se il job ha raggiunto il timeout allora viene eliminato se è impostato autoremove
+ */
 bool FogPU::checkTimeoutExpired(FogJob *job, bool autoremove)
 {
     if (job == NULL)
@@ -468,6 +502,9 @@ bool FogPU::checkTimeoutExpired(FogJob *job, bool autoremove)
     return false;
 }
 
+/**
+ * Imposto il timeout per il job in esecuzione
+ */
 void FogPU::setTimeout(FogJob *job)
 {
     // timeout can occur only for the currently processed job
@@ -488,6 +525,9 @@ void FogPU::cancelTimeout(FogJob *job)
     }
 }
 
+/*
+ * Rimuove i jobs che sono scaduti per timeout
+ */
 void FogPU::removeExpiredJobs()
 {
     // iterate over queue
@@ -512,6 +552,9 @@ void FogPU::removeExpiredJobs()
     //EV << "done."<< endl;
 }
 
+/**
+ * Cambia lo stato del server
+ */
 void FogPU::changeState(int transition)
 {
     simtime_t now;

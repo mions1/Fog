@@ -13,7 +13,7 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package ned;
+package fog;
 
 //
 // Generates messages with a configurable interarrival time.
@@ -24,7 +24,7 @@ simple FogSource
         volatile double sendInterval @unit(s) = default(exponential(1s));
         double maxInterval @unit(s) = default(-1s);
         int appId;
-        int realTime; //If 1 -> realtime
+        int realTime = default(0); //If 1 -> realtime
         @display("i=block/source");
     gates:
         output out;

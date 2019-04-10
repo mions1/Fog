@@ -15,10 +15,10 @@
 
 package fog.simulations;
 
-import ned.FogSource;
-import ned.CloudCongestionControl;
-import ned.CloudDelayCenter;
-import ned.CloudSink;
+import fog.FogSource;
+import fog.CloudCongestionControl;
+import fog.CloudDelayCenter;
+import fog.CloudSink;
 
 
 network Test2stateDelay

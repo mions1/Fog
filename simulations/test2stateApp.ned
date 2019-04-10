@@ -15,10 +15,10 @@
 
 package fog.simulations;
 
-import ned.FogPUTS;
-import ned.FogSource;
-import ned.CloudCongestionControl;
-import ned.CloudSink;
+import fog.FogPUTS;
+import fog.FogSource;
+import fog.CloudCongestionControl;
+import fog.CloudSink;
 
 
 network Test2stateApp

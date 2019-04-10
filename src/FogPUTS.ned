@@ -7,12 +7,12 @@
 // `license' for details on this and other legal matters.
 //
 
-package ned;
+package fog;
 
 //
 // A queue with a built-in server
 //
-simple FogPU
+simple FogPUTS
 {
     parameters:
         //@group(Queueing);
@@ -36,5 +36,4 @@ simple FogPU
         input congestionControl;
         input in[];
         output out;
-        output loadUpdate;
 }

@@ -13,17 +13,28 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package ned;
+#ifndef FOGSEQUENTIALFORWARDING_H_
+#define FOGSEQUENTIALFORWARDING_H_
 
-//
-// Consumes received messages and collects statistics
-//
-simple CloudSink
-{
-    parameters:
-        @display("i=block/sink");
-        // FIXME: should use a map and make this parameter unrequired
-        int maxApps;
-    gates:
-        input in[];
+#include <omnetpp.h>
+#include "../../../queueinglib/QueueingDefs.h"
+#include <omnetpp/cmsgpar.h>
+#include <omnetpp/cqueue.h>
+#include "FogLoadBalancer.h"
+#include "FogJob_m.h"
+#include "LoadUpdate_m.h"
+
+using namespace omnetpp;
+
+namespace fog {
+    class FogSequentialForwarding: public FogLoadBalancer {
+        public:
+            FogSequentialForwarding();
+            virtual ~FogSequentialForwarding();
+
+        protected:
+
+        };
 }
+
+#endif /* FOGSEQUENTIALFORWARDING_H_ */

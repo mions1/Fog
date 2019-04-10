@@ -15,8 +15,8 @@
 
 package fog.simulations;
 
-import ned.FogSource;
-import ned.CloudSink;
+import fog.FogSource;
+import fog.CloudSink;
 
 
 //

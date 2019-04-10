@@ -10,8 +10,8 @@
 #ifndef __CLOUDDELAYCENTER_H
 #define __CLOUDDELAYCENTER_H
 
-#include "../../../queueinglib/QueueingDefs.h"
-#include "../FogJob_m.h"
+#include "../../queueinglib/QueueingDefs.h"
+#include "FogJob_m.h"
 #include <map>
 
 typedef std::map<long, cMessage *> jobMap;

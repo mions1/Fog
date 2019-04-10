@@ -13,25 +13,37 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-package fog.simulations;
+#include "FogLoadBalancer.h"
+#include "FogSequentialForwarding.h"
+#include "FogJob_m.h"
 
-import fog.FogPUTS;
-import fog.FogSource;
-import fog.CloudCongestionControl;
-import fog.CloudSink;
+namespace fog {
+
+    FogSequentialForwarding::FogSequentialForwarding() {
+        // TODO Auto-generated constructor stub
+
+    }
+
+    FogSequentialForwarding::~FogSequentialForwarding() {
+        // TODO Auto-generated destructor stub
+    }
+
+    void FogSequentialForwarding::processJob(FogJob *job) {
+
+    }
+
+    bool FogSequentialForwarding::decideProcessLocally(FogJob *job, NULL) {
+
+    }
+
+    int FogSequentialForwarding::getFanout() {
+        return 0;
+    }
 
 
-network TestServer
-{
-    parameters:
-    submodules:
-        source: FogSource;
-        server: FogPUTS;
-        sink: CloudSink;
-        congestionCtl: CloudCongestionControl;
-    connections:
-        source.out --> server.in++;
-        server.out --> sink.in++;
-        congestionCtl.congestionControl++ --> server.congestionControl;
+
+    void FogSequentialForwarding::handleMessage(cMessage *msg) {
+
+    }
 
 }

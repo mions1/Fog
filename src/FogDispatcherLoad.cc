@@ -13,9 +13,9 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "headers/FogDispatcherLoad.h"
+#include "FogDispatcherLoad.h"
 #include "FogJob_m.h"
-#include "headers/FogPU.h"
+#include "FogPU.h"
 #include <algorithm>
 namespace fog {
 
@@ -116,6 +116,27 @@ void FogDispatcherLoad::finish()
 
 }
 
+/**
+ * Gestisce i job che arrivano dalla sorgente o da altri nodi, decide a quale PU farlo processare, se fare probing o se droppare
+ *
+ * Ricezione di un job:
+ *      Se il job proviene da un altro nodo
+ *          -> Se ho pieni sia server che code lo droppo
+ *      Se il job proviene da locale
+ *          -> Se ho un server libero lo processo
+ *          -> Se ho i server pieni faccio probing
+ *
+ * Ricezione di un probe:
+ *      ->Se ho server libero mando un ACK
+ *      ->Altrimenti, se ho code libere mando ACK+1000
+ *      ->Altrimenti, se ho tutto pieno, mando NACK
+ *
+ * Ricezione ACK:
+ *      ->Se ho ACK < 1000 allora qualcuno ha server liberi e lo mando a lui
+ *      ->Se ho ACK > 1000 controllo se ho posti in coda locale, se si lo tengo altrimenti lo mando fuori
+ *      ->Se ho solo NACK controllo le mie code, se son piene droppo
+ *
+ */
 void FogDispatcherLoad::handleMessage(cMessage *msg)
 {
     if (strcmp(msg->getName(), "job") == 0)
