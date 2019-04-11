@@ -52,10 +52,10 @@ void FogSource::handleMessage(cMessage *msg)
     job->setQueuingTime(0.0);
     job->setServiceTime(0.0);
     job->setDelayTime(0.0);
-    job->setSlack(par("slack").doubleValue()); //Poi andrà calcolato in qualche modo
     job->setSuggestedTime(par("suggestedTime").doubleValue());
     job->setQueueCount(0);
     job->setDelayCount(0);
+    job->setSlaDeadline(simTime()+job->getSuggestedTime()*2); //Poi andrà calcolato in qualche modo
     job->setAppId(par("appId"));
     job->setRealTime(par("realTime")); //Poi dipenderà dalla classe
     send(job, "out");

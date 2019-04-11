@@ -25,7 +25,9 @@ namespace fog {
 
 class FogDispatcherLoad : public cSimpleModule
 {
+
 private:
+
     int servers;
     int probeSent;
     int incID;

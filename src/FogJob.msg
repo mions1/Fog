@@ -25,8 +25,8 @@ message FogJob
     simtime_t serviceTime;  	// total time spent in servers
     simtime_t delayTime;    	// total time spent in delay modules
     simtime_t probeTime;		// time passed waiting for probe
-    simtime_t slack;			//deadline for SLA
-	simtime_t suggestedTime;	//suggested service time. 
+    simtime_t slaDeadline;		// deadline for SLA
+	simtime_t suggestedTime;	// suggested service time. 
     
     int queueCount;             // the number of queue modules visited by the job
     int delayCount;             // the number of delay modules visited by the job

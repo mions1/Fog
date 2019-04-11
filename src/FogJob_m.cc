@@ -187,7 +187,7 @@ FogJob::FogJob(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
     this->serviceTime = 0;
     this->delayTime = 0;
     this->probeTime = 0;
-    this->slack = 0;
+    this->slaDeadline = 0;
     this->suggestedTime = 0;
     this->queueCount = 0;
     this->delayCount = 0;
@@ -221,7 +221,7 @@ void FogJob::copy(const FogJob& other)
     this->serviceTime = other.serviceTime;
     this->delayTime = other.delayTime;
     this->probeTime = other.probeTime;
-    this->slack = other.slack;
+    this->slaDeadline = other.slaDeadline;
     this->suggestedTime = other.suggestedTime;
     this->queueCount = other.queueCount;
     this->delayCount = other.delayCount;
@@ -239,7 +239,7 @@ void FogJob::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->serviceTime);
     doParsimPacking(b,this->delayTime);
     doParsimPacking(b,this->probeTime);
-    doParsimPacking(b,this->slack);
+    doParsimPacking(b,this->slaDeadline);
     doParsimPacking(b,this->suggestedTime);
     doParsimPacking(b,this->queueCount);
     doParsimPacking(b,this->delayCount);
@@ -257,7 +257,7 @@ void FogJob::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->serviceTime);
     doParsimUnpacking(b,this->delayTime);
     doParsimUnpacking(b,this->probeTime);
-    doParsimUnpacking(b,this->slack);
+    doParsimUnpacking(b,this->slaDeadline);
     doParsimUnpacking(b,this->suggestedTime);
     doParsimUnpacking(b,this->queueCount);
     doParsimUnpacking(b,this->delayCount);
@@ -317,14 +317,14 @@ void FogJob::setProbeTime(::omnetpp::simtime_t probeTime)
     this->probeTime = probeTime;
 }
 
-::omnetpp::simtime_t FogJob::getSlack() const
+::omnetpp::simtime_t FogJob::getSlaDeadline() const
 {
-    return this->slack;
+    return this->slaDeadline;
 }
 
-void FogJob::setSlack(::omnetpp::simtime_t slack)
+void FogJob::setSlaDeadline(::omnetpp::simtime_t slaDeadline)
 {
-    this->slack = slack;
+    this->slaDeadline = slaDeadline;
 }
 
 ::omnetpp::simtime_t FogJob::getSuggestedTime() const
@@ -505,7 +505,7 @@ const char *FogJobDescriptor::getFieldName(int field) const
         "serviceTime",
         "delayTime",
         "probeTime",
-        "slack",
+        "slaDeadline",
         "suggestedTime",
         "queueCount",
         "delayCount",
@@ -526,7 +526,7 @@ int FogJobDescriptor::findField(const char *fieldName) const
     if (fieldName[0]=='s' && strcmp(fieldName, "serviceTime")==0) return base+2;
     if (fieldName[0]=='d' && strcmp(fieldName, "delayTime")==0) return base+3;
     if (fieldName[0]=='p' && strcmp(fieldName, "probeTime")==0) return base+4;
-    if (fieldName[0]=='s' && strcmp(fieldName, "slack")==0) return base+5;
+    if (fieldName[0]=='s' && strcmp(fieldName, "slaDeadline")==0) return base+5;
     if (fieldName[0]=='s' && strcmp(fieldName, "suggestedTime")==0) return base+6;
     if (fieldName[0]=='q' && strcmp(fieldName, "queueCount")==0) return base+7;
     if (fieldName[0]=='d' && strcmp(fieldName, "delayCount")==0) return base+8;
@@ -632,7 +632,7 @@ std::string FogJobDescriptor::getFieldValueAsString(void *object, int field, int
         case 2: return simtime2string(pp->getServiceTime());
         case 3: return simtime2string(pp->getDelayTime());
         case 4: return simtime2string(pp->getProbeTime());
-        case 5: return simtime2string(pp->getSlack());
+        case 5: return simtime2string(pp->getSlaDeadline());
         case 6: return simtime2string(pp->getSuggestedTime());
         case 7: return long2string(pp->getQueueCount());
         case 8: return long2string(pp->getDelayCount());
@@ -659,7 +659,7 @@ bool FogJobDescriptor::setFieldValueAsString(void *object, int field, int i, con
         case 2: pp->setServiceTime(string2simtime(value)); return true;
         case 3: pp->setDelayTime(string2simtime(value)); return true;
         case 4: pp->setProbeTime(string2simtime(value)); return true;
-        case 5: pp->setSlack(string2simtime(value)); return true;
+        case 5: pp->setSlaDeadline(string2simtime(value)); return true;
         case 6: pp->setSuggestedTime(string2simtime(value)); return true;
         case 7: pp->setQueueCount(string2long(value)); return true;
         case 8: pp->setDelayCount(string2long(value)); return true;

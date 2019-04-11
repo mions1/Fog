@@ -18,8 +18,9 @@ package fog;
 //
 // TODO auto-generated module
 //
-simple FogDispatcherLoad
+simple FogLoadBalancer
 {
+    
     parameters:
         volatile int fanOut;
         @display("i=block/fork");
@@ -27,7 +28,8 @@ simple FogDispatcherLoad
     gates:
         input in[];
         input localLoad[];
-        input outerLoad[];
-        output probeOuterLoad[];
+        input loadFromNeighbor[];
+        output loadToNeighbor[];
         output out[];
+    
 }

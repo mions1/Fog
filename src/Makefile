@@ -36,6 +36,7 @@ OBJS = \
     $O/CloudSink.o \
     $O/FogDispatcherLoad.o \
     $O/FogDispatcherRR.o \
+    $O/FogLoadBalancer.o \
     $O/FogPU.o \
     $O/FogPUTS.o \
     $O/FogSource.o \
