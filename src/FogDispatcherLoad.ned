@@ -21,7 +21,7 @@ package fog;
 simple FogDispatcherLoad
 {
     parameters:
-        volatile int fanOut;
+        int fanOut = default(1);
         @display("i=block/fork");
         
     gates:

@@ -15,10 +15,10 @@
 
 package fog.simulations;
 
-import fog.FogPUTS;
+import fog.FogPU;
 import fog.FogSource;
 import fog.CloudCongestionControl;
-import fog.CloudSink;
+import fog.FogSink;
 
 
 network Test2stateApp
@@ -27,8 +27,8 @@ network Test2stateApp
     submodules:
         source: FogSource;
         congestionCtl: CloudCongestionControl;
-        server: FogPUTS;
-        sink: CloudSink;
+        server: FogPU;
+        sink: FogSink;
     connections:
         source.out --> server.in++;
         server.out --> sink.in++;

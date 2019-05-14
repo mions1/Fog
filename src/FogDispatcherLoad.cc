@@ -145,13 +145,11 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         serverFound = false;
 
         cGate *temp = msg->getArrivalGate();
-        //se il job proviene da un altro nodo controllo se ho un server libero. se no controllo le code. se è tutto pieno il job verrà mandato al primo server e poi droppato.
+        //se il job proviene da un altro nodo controllo se ho un server libero. se no controllo le code. se �� tutto pieno il job verr�� mandato al primo server e poi droppato.
         int strcompare = strcmp(temp->getName(), "outerLoad");
         if (strcompare == 0)
         {
-            FogJob *jobCopy = (FogJob *) msg;
-
-            for (int iterator = 0; iterator < serverBusy.size(); iterator++)
+            for (unsigned int iterator = 0; iterator < serverBusy.size(); iterator++)
             {
                 if (serverBusy[iterator] == 0)
                 {
@@ -169,7 +167,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                 bool queueFound = false;
                 int whichServer = 0;
                 int temp = 0;
-                for (int iterator = 0; iterator < queueBusy.size(); iterator++)
+                for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++)
                 {
                     if (temp >= (queueCapacity / servers))
                     {
@@ -200,7 +198,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         //se il job proviene dal source controllo lo stato dei server. teniamo conto del caso con fanout=0 e scenari con un solo nodo.
         else
         {
-            for (int iterator = 0; iterator < serverBusy.size(); iterator++)
+            for (unsigned int iterator = 0; iterator < serverBusy.size(); iterator++)
             {
                 if (serverBusy[iterator] == 0)
                 {
@@ -220,7 +218,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                     trovato = false;
                     int temp = 0;
                     int whichServer = 0;
-                    for (int iterator = 0; iterator < queueBusy.size(); iterator++) //2
+                    for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++) //2
                     {
                         if (temp >= (queueCapacity / servers))
                         {
@@ -290,7 +288,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         bool check = false;
         //al ricevimento di un messaggio di probe controllo se ci sono server IDLE e mando ACK in caso di esito positivo.
 
-        for (int iterator = 0; iterator < serverBusy.size(); iterator++)
+        for (unsigned int iterator = 0; iterator < serverBusy.size(); iterator++)
         {
             if (serverBusy[iterator] == 0)
             {
@@ -298,7 +296,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                 cGate * sender = msg->getSenderGate();
                 for (cModule::GateIterator i(this); !i.end(); i++)
                 {
-                    cGate *gate = i();
+                    cGate *gate = *i;
                     std::string gateStr = gate->getName();
                     if (gateStr == "probeOuterLoad" && gate->getPathEndGate()->getOwnerModule() == sender->getOwnerModule())
                     {
@@ -319,7 +317,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         {
             //se non ci sono server controllo le code (se disponibili). Se troviamo un posto nelle code, incrementiamo il kind del messaggio di probe di 10000
             bool checkQueue = false;
-            for (int iterator = 0; iterator < queueBusy.size(); iterator++)
+            for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++)
             {
 
                 if (queueBusy[iterator] == 0)
@@ -335,7 +333,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                 cGate * sender = msg->getSenderGate();
                 for (cModule::GateIterator i(this); !i.end(); i++)
                 {
-                    cGate *gate = i();
+                    cGate *gate = *i;
                     std::string gateStr = gate->getName();
                     if (gateStr == "probeOuterLoad" && gate->getPathEndGate()->getOwnerModule() == sender->getOwnerModule())
                     {
@@ -353,7 +351,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                 cGate * sender = msg->getSenderGate();
                 for (cModule::GateIterator i(this); !i.end(); i++)
                 {
-                    cGate *gate = i();
+                    cGate *gate = *i;
                     std::string gateStr = gate->getName();
                     if (gateStr == "probeOuterLoad" && gate->getPathEndGate()->getOwnerModule() == sender->getOwnerModule())
                     {
@@ -388,12 +386,12 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
             //controlliamo le risposte. se probeAnswer<10000 vuol dire che ci sono server liberi in altri nodi
             if (!jobSent)
             {
-                for (int k = 0; k < probeAnswer.size(); k++)
+                for (unsigned int k = 0; k < probeAnswer.size(); k++)
                 {
 
                     if (probeAnswer[k] < 10000 && probeAnswer[k] != -1)
                     {
-                        if (!buffer.empty())
+                        if (!buffer.isEmpty())
                         {
 
                             for (int j = 0;; j++)
@@ -401,7 +399,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
 
                                 FogJob *job;
                                 job = (FogJob *) buffer.get(j);
-                                //in caso ci siano più job nel buffer del dispatcher cerchiamo il job con ID uguale a quello del messaggio di probe
+                                //in caso ci siano pi�� job nel buffer del dispatcher cerchiamo il job con ID uguale a quello del messaggio di probe
                                 if (job->getId() == probeAnswer[k])
                                 {
 
@@ -436,14 +434,14 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
             if (!jobSent)
             {
                 //se non abbiamo trovato server libero in altri nodi controlliamo se per caso ci sono dei posti nelle code.
-                for (int k = 0; k < probeAnswer.size(); k++) //3
+                for (unsigned int k = 0; k < probeAnswer.size(); k++) //3
                 {
                     //se abbiamo trovato un posto in una coda di un nodo esterno, controlliamo prima lo stato delle code locali
-                    if (probeAnswer[k] >= 10000 && probeAnswer[k] != -1 && !buffer.empty())
+                    if (probeAnswer[k] >= 10000 && probeAnswer[k] != -1 && !buffer.isEmpty())
                     {
                         int whichServer = 0;
                         int temp = 0;
-                        for (int iterator = 0; iterator < queueBusy.size(); iterator++) //2
+                        for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++) //2
                         {
 
                             if (temp >= (queueCapacity / servers))
@@ -460,7 +458,6 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                                 {
                                     FogJob *job;
                                     job = (FogJob *) buffer.get(j);
-                                    int bbb = job->getId();
                                     EV << job->getId() << "--job ID" << endl;
 
                                     if ((job->getId()) + 10000 == probeAnswer[k])
@@ -489,7 +486,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                             break;
                         }
                         //se non ci sono posti nelle code locali mandiamo il job al primo nodo che ha risposto con un ack
-                        else if (!buffer.empty())
+                        else if (!buffer.isEmpty())
                         {
 
                             for (int j = 0;; j++)
@@ -562,7 +559,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                     bool check = false;
                     if (job->getId() == msg->getKind())
                     {
-                        for (int iterator = 0; iterator < queueBusy.size(); iterator++)
+                        for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++)
                         {
                             if (temp >= (queueCapacity / servers))
                             {
@@ -612,12 +609,12 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
 
             if (!jobSent)
             {
-                for (int k = 0; k < probeAnswer.size(); k++)
+                for (unsigned int k = 0; k < probeAnswer.size(); k++)
                 {
 
                     if (probeAnswer[k] < 10000 && probeAnswer[k] != -1)
                     {
-                        if (!buffer.empty())
+                        if (!buffer.isEmpty())
                         {
                             for (int j = 0;; j++)
                             {
@@ -656,14 +653,14 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
             }
             if (!jobSent)
             {
-                for (int k = 0; k < probeAnswer.size(); k++) //3
+                for (unsigned int k = 0; k < probeAnswer.size(); k++) //3
                 {
 
-                    if (probeAnswer[k] >= 10000 && probeAnswer[k] != -1 && !buffer.empty())
+                    if (probeAnswer[k] >= 10000 && probeAnswer[k] != -1 && !buffer.isEmpty())
                     {
                         int whichServer = 0;
                         int temp = 0;
-                        for (int iterator = 0; iterator < queueBusy.size(); iterator++) //2
+                        for (unsigned int iterator = 0; iterator < queueBusy.size(); iterator++) //2
                         {
 
                             if (temp >= (queueCapacity / servers))
@@ -706,7 +703,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
                             trovato = false;
                             break;
                         }
-                        else if (!buffer.empty())
+                        else if (!buffer.isEmpty())
                         {
 
                             for (int j = 0;; j++)
@@ -757,11 +754,11 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         int pos = 0;
         int temp = 0;
         //loadupdate con kind 0 indica la fine di un job. Controlliamo lo stato delle code del server che ha generato tale messaggio.
-        //Se il vettore delle code ha solo degli zeri vuol dire che il server è diventato IDLE. Aggiorniamo i relativi vettore a seconda del caso.
+        //Se il vettore delle code ha solo degli zeri vuol dire che il server �� diventato IDLE. Aggiorniamo i relativi vettore a seconda del caso.
         if (msg->getKind() == 0)
         {
             temp = queueCapacity / servers;
-            for (int queueIterator = (idx * (queueCapacity / servers)); queueIterator < queueBusy.size(); queueIterator++)
+            for (unsigned int queueIterator = (idx * (queueCapacity / servers)); queueIterator < queueBusy.size(); queueIterator++)
             {
 
                 if (queueBusy[queueIterator] == 1)
@@ -788,7 +785,7 @@ void FogDispatcherLoad::handleMessage(cMessage *msg)
         {
             jobsTimedOut++;
             temp = queueCapacity / servers;
-            for (int queueIterator = (idx * (queueCapacity / servers)); queueIterator < queueBusy.size(); queueIterator++)
+            for (unsigned int queueIterator = (idx * (queueCapacity / servers)); queueIterator < queueBusy.size(); queueIterator++)
             {
 
                 if (queueBusy[queueIterator] == 1)

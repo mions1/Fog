@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.4 from LoadUpdate.msg.
+// Generated file, do not edit! Created by nedtool 5.4 from ProbeAnswer.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:
@@ -26,7 +26,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "LoadUpdate_m.h"
+#include "ProbeAnswer_m.h"
 
 namespace omnetpp {
 
@@ -178,24 +178,25 @@ inline std::ostream& operator<<(std::ostream& out, const std::vector<T,A>& vec)
     return out;
 }
 
-Register_Class(LoadUpdate)
+Register_Class(ProbeAnswer)
 
-LoadUpdate::LoadUpdate(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
+ProbeAnswer::ProbeAnswer(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
 {
-    this->busy = 0;
-    this->queueFull = 0;
+    this->load = 0;
+    this->queryId = 0;
+    this->appId = 0;
 }
 
-LoadUpdate::LoadUpdate(const LoadUpdate& other) : ::omnetpp::cMessage(other)
+ProbeAnswer::ProbeAnswer(const ProbeAnswer& other) : ::omnetpp::cMessage(other)
 {
     copy(other);
 }
 
-LoadUpdate::~LoadUpdate()
+ProbeAnswer::~ProbeAnswer()
 {
 }
 
-LoadUpdate& LoadUpdate::operator=(const LoadUpdate& other)
+ProbeAnswer& ProbeAnswer::operator=(const ProbeAnswer& other)
 {
     if (this==&other) return *this;
     ::omnetpp::cMessage::operator=(other);
@@ -203,53 +204,66 @@ LoadUpdate& LoadUpdate::operator=(const LoadUpdate& other)
     return *this;
 }
 
-void LoadUpdate::copy(const LoadUpdate& other)
+void ProbeAnswer::copy(const ProbeAnswer& other)
 {
-    this->busy = other.busy;
-    this->queueFull = other.queueFull;
+    this->load = other.load;
+    this->queryId = other.queryId;
+    this->appId = other.appId;
 }
 
-void LoadUpdate::parsimPack(omnetpp::cCommBuffer *b) const
+void ProbeAnswer::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
-    doParsimPacking(b,this->busy);
-    doParsimPacking(b,this->queueFull);
+    doParsimPacking(b,this->load);
+    doParsimPacking(b,this->queryId);
+    doParsimPacking(b,this->appId);
 }
 
-void LoadUpdate::parsimUnpack(omnetpp::cCommBuffer *b)
+void ProbeAnswer::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
-    doParsimUnpacking(b,this->busy);
-    doParsimUnpacking(b,this->queueFull);
+    doParsimUnpacking(b,this->load);
+    doParsimUnpacking(b,this->queryId);
+    doParsimUnpacking(b,this->appId);
 }
 
-double LoadUpdate::getBusy() const
+double ProbeAnswer::getLoad() const
 {
-    return this->busy;
+    return this->load;
 }
 
-void LoadUpdate::setBusy(double busy)
+void ProbeAnswer::setLoad(double load)
 {
-    this->busy = busy;
+    this->load = load;
 }
 
-int LoadUpdate::getQueueFull() const
+int ProbeAnswer::getQueryId() const
 {
-    return this->queueFull;
+    return this->queryId;
 }
 
-void LoadUpdate::setQueueFull(int queueFull)
+void ProbeAnswer::setQueryId(int queryId)
 {
-    this->queueFull = queueFull;
+    this->queryId = queryId;
 }
 
-class LoadUpdateDescriptor : public omnetpp::cClassDescriptor
+int ProbeAnswer::getAppId() const
+{
+    return this->appId;
+}
+
+void ProbeAnswer::setAppId(int appId)
+{
+    this->appId = appId;
+}
+
+class ProbeAnswerDescriptor : public omnetpp::cClassDescriptor
 {
   private:
     mutable const char **propertynames;
   public:
-    LoadUpdateDescriptor();
-    virtual ~LoadUpdateDescriptor();
+    ProbeAnswerDescriptor();
+    virtual ~ProbeAnswerDescriptor();
 
     virtual bool doesSupport(omnetpp::cObject *obj) const override;
     virtual const char **getPropertyNames() const override;
@@ -271,24 +285,24 @@ class LoadUpdateDescriptor : public omnetpp::cClassDescriptor
     virtual void *getFieldStructValuePointer(void *object, int field, int i) const override;
 };
 
-Register_ClassDescriptor(LoadUpdateDescriptor)
+Register_ClassDescriptor(ProbeAnswerDescriptor)
 
-LoadUpdateDescriptor::LoadUpdateDescriptor() : omnetpp::cClassDescriptor("fog::LoadUpdate", "omnetpp::cMessage")
+ProbeAnswerDescriptor::ProbeAnswerDescriptor() : omnetpp::cClassDescriptor("fog::ProbeAnswer", "omnetpp::cMessage")
 {
     propertynames = nullptr;
 }
 
-LoadUpdateDescriptor::~LoadUpdateDescriptor()
+ProbeAnswerDescriptor::~ProbeAnswerDescriptor()
 {
     delete[] propertynames;
 }
 
-bool LoadUpdateDescriptor::doesSupport(omnetpp::cObject *obj) const
+bool ProbeAnswerDescriptor::doesSupport(omnetpp::cObject *obj) const
 {
-    return dynamic_cast<LoadUpdate *>(obj)!=nullptr;
+    return dynamic_cast<ProbeAnswer *>(obj)!=nullptr;
 }
 
-const char **LoadUpdateDescriptor::getPropertyNames() const
+const char **ProbeAnswerDescriptor::getPropertyNames() const
 {
     if (!propertynames) {
         static const char *names[] = {  nullptr };
@@ -299,19 +313,19 @@ const char **LoadUpdateDescriptor::getPropertyNames() const
     return propertynames;
 }
 
-const char *LoadUpdateDescriptor::getProperty(const char *propertyname) const
+const char *ProbeAnswerDescriptor::getProperty(const char *propertyname) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     return basedesc ? basedesc->getProperty(propertyname) : nullptr;
 }
 
-int LoadUpdateDescriptor::getFieldCount() const
+int ProbeAnswerDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 2+basedesc->getFieldCount() : 2;
+    return basedesc ? 3+basedesc->getFieldCount() : 3;
 }
 
-unsigned int LoadUpdateDescriptor::getFieldTypeFlags(int field) const
+unsigned int ProbeAnswerDescriptor::getFieldTypeFlags(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -322,11 +336,12 @@ unsigned int LoadUpdateDescriptor::getFieldTypeFlags(int field) const
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<3) ? fieldTypeFlags[field] : 0;
 }
 
-const char *LoadUpdateDescriptor::getFieldName(int field) const
+const char *ProbeAnswerDescriptor::getFieldName(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -335,22 +350,24 @@ const char *LoadUpdateDescriptor::getFieldName(int field) const
         field -= basedesc->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "busy",
-        "queueFull",
+        "load",
+        "queryId",
+        "appId",
     };
-    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<3) ? fieldNames[field] : nullptr;
 }
 
-int LoadUpdateDescriptor::findField(const char *fieldName) const
+int ProbeAnswerDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
-    if (fieldName[0]=='b' && strcmp(fieldName, "busy")==0) return base+0;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queueFull")==0) return base+1;
+    if (fieldName[0]=='l' && strcmp(fieldName, "load")==0) return base+0;
+    if (fieldName[0]=='q' && strcmp(fieldName, "queryId")==0) return base+1;
+    if (fieldName[0]=='a' && strcmp(fieldName, "appId")==0) return base+2;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
-const char *LoadUpdateDescriptor::getFieldTypeString(int field) const
+const char *ProbeAnswerDescriptor::getFieldTypeString(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -361,11 +378,12 @@ const char *LoadUpdateDescriptor::getFieldTypeString(int field) const
     static const char *fieldTypeStrings[] = {
         "double",
         "int",
+        "int",
     };
-    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<3) ? fieldTypeStrings[field] : nullptr;
 }
 
-const char **LoadUpdateDescriptor::getFieldPropertyNames(int field) const
+const char **ProbeAnswerDescriptor::getFieldPropertyNames(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -378,7 +396,7 @@ const char **LoadUpdateDescriptor::getFieldPropertyNames(int field) const
     }
 }
 
-const char *LoadUpdateDescriptor::getFieldProperty(int field, const char *propertyname) const
+const char *ProbeAnswerDescriptor::getFieldProperty(int field, const char *propertyname) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -391,7 +409,7 @@ const char *LoadUpdateDescriptor::getFieldProperty(int field, const char *proper
     }
 }
 
-int LoadUpdateDescriptor::getFieldArraySize(void *object, int field) const
+int ProbeAnswerDescriptor::getFieldArraySize(void *object, int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -399,13 +417,13 @@ int LoadUpdateDescriptor::getFieldArraySize(void *object, int field) const
             return basedesc->getFieldArraySize(object, field);
         field -= basedesc->getFieldCount();
     }
-    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
+    ProbeAnswer *pp = (ProbeAnswer *)object; (void)pp;
     switch (field) {
         default: return 0;
     }
 }
 
-const char *LoadUpdateDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
+const char *ProbeAnswerDescriptor::getFieldDynamicTypeString(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -413,13 +431,13 @@ const char *LoadUpdateDescriptor::getFieldDynamicTypeString(void *object, int fi
             return basedesc->getFieldDynamicTypeString(object,field,i);
         field -= basedesc->getFieldCount();
     }
-    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
+    ProbeAnswer *pp = (ProbeAnswer *)object; (void)pp;
     switch (field) {
         default: return nullptr;
     }
 }
 
-std::string LoadUpdateDescriptor::getFieldValueAsString(void *object, int field, int i) const
+std::string ProbeAnswerDescriptor::getFieldValueAsString(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -427,15 +445,16 @@ std::string LoadUpdateDescriptor::getFieldValueAsString(void *object, int field,
             return basedesc->getFieldValueAsString(object,field,i);
         field -= basedesc->getFieldCount();
     }
-    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
+    ProbeAnswer *pp = (ProbeAnswer *)object; (void)pp;
     switch (field) {
-        case 0: return double2string(pp->getBusy());
-        case 1: return long2string(pp->getQueueFull());
+        case 0: return double2string(pp->getLoad());
+        case 1: return long2string(pp->getQueryId());
+        case 2: return long2string(pp->getAppId());
         default: return "";
     }
 }
 
-bool LoadUpdateDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
+bool ProbeAnswerDescriptor::setFieldValueAsString(void *object, int field, int i, const char *value) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -443,15 +462,16 @@ bool LoadUpdateDescriptor::setFieldValueAsString(void *object, int field, int i,
             return basedesc->setFieldValueAsString(object,field,i,value);
         field -= basedesc->getFieldCount();
     }
-    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
+    ProbeAnswer *pp = (ProbeAnswer *)object; (void)pp;
     switch (field) {
-        case 0: pp->setBusy(string2double(value)); return true;
-        case 1: pp->setQueueFull(string2long(value)); return true;
+        case 0: pp->setLoad(string2double(value)); return true;
+        case 1: pp->setQueryId(string2long(value)); return true;
+        case 2: pp->setAppId(string2long(value)); return true;
         default: return false;
     }
 }
 
-const char *LoadUpdateDescriptor::getFieldStructName(int field) const
+const char *ProbeAnswerDescriptor::getFieldStructName(int field) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -464,7 +484,7 @@ const char *LoadUpdateDescriptor::getFieldStructName(int field) const
     };
 }
 
-void *LoadUpdateDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
+void *ProbeAnswerDescriptor::getFieldStructValuePointer(void *object, int field, int i) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     if (basedesc) {
@@ -472,7 +492,7 @@ void *LoadUpdateDescriptor::getFieldStructValuePointer(void *object, int field, 
             return basedesc->getFieldStructValuePointer(object, field, i);
         field -= basedesc->getFieldCount();
     }
-    LoadUpdate *pp = (LoadUpdate *)object; (void)pp;
+    ProbeAnswer *pp = (ProbeAnswer *)object; (void)pp;
     switch (field) {
         default: return nullptr;
     }

@@ -15,34 +15,32 @@ import org.omnetpp.queueing.Merge;
 //
 // A subset of VMs processing requests of the same app
 //
-module FogProcessing
+module FogNode
 {
     parameters:
         @display("i=block/network");
-        int appId;
+        int nApps;
         int nServers;
-        // source parameters
-        source.appId = appId;
-        source.sendInterval = default(exponential(1s));
-        source.maxInterval = default(-1s);
-        source.realTime = default(false);
-        // server parameters
-        server[*].serviceTime = default(exponential(0.9s));
         server[*].maxServiceTime = default(-1s);
+        dispatcher.nApps=nApps;
        	//server.fifo=true
        	//server.capacity=-1
     gates:
         output out;
+        input in[];
+        output toNeighbors[];
+        input fromNeighbors[];
     submodules:
-        source: FogSource;
-        // FIXME: should add also
-        server[nServers]: FogPUTS;
-        dispatcher: FogDispatcherRR;
+        dispatcher: FogLoadBalancer;
+        server[nServers]: FogPU;
         merge: Merge;
-    connections:
-        source.out --> dispatcher.in;
+    connections allowunconnected:
+        in++ --> dispatcher.in++;
+        dispatcher.loadToNeighbor++ --> toNeighbors++;
+        fromNeighbors++ --> dispatcher.loadFromNeighbor++;
         for i=0..nServers-1 {
             dispatcher.out++ --> server[i].in++;
+            server[i].loadUpdate --> dispatcher.localLoad++;
             server[i].out --> merge.in++;
         }
         merge.out --> out;

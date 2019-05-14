@@ -1,16 +1,14 @@
-../out/gcc-release/src/FogLoadBalancer.o: FogLoadBalancer.cc \
- LoadUpdate_m.h \
+../out/gcc-release/src/FogSequentialForwarding.o: \
+ FogSequentialForwarding.cc FogLoadBalancer.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp.h \
- FogLoadBalancer.h FogJob_m.h ProbeAnswer_m.h ProbeQuery_m.h FogPU.h \
- ../../queueinglib/QueueingDefs.h \
+ FogJob_m.h ProbeAnswer_m.h ProbeQuery_m.h LoadUpdate_m.h \
+ FogSequentialForwarding.h ../../queueinglib/QueueingDefs.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cmsgpar.h \
  /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp/cqueue.h
 
-LoadUpdate_m.h:
+FogLoadBalancer.h:
 
 /home/simone/Universita/Tesi/dief_2018_fog_simulator/omnetpp-5.4.1/include/omnetpp.h:
-
-FogLoadBalancer.h:
 
 FogJob_m.h:
 
@@ -18,7 +16,9 @@ ProbeAnswer_m.h:
 
 ProbeQuery_m.h:
 
-FogPU.h:
+LoadUpdate_m.h:
+
+FogSequentialForwarding.h:
 
 ../../queueinglib/QueueingDefs.h:
 

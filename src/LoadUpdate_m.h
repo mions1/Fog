@@ -22,10 +22,10 @@ namespace fog {
 /**
  * Class generated from <tt>LoadUpdate.msg:22</tt> by nedtool.
  * <pre>
- * message loadUpdate
+ * message LoadUpdate
  * {
  *     double busy;					//Status load 0->idle, 1-> busy, >1 with queue
- *     int queueFull;						//1 if queue is full
+ *     int queueFull;					//1 if queue is full
  * }
  * </pre>
  */

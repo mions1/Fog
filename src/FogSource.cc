@@ -52,12 +52,15 @@ void FogSource::handleMessage(cMessage *msg)
     job->setQueuingTime(0.0);
     job->setServiceTime(0.0);
     job->setDelayTime(0.0);
+    job->setBalancerTime(0.0);
     job->setSuggestedTime(par("suggestedTime").doubleValue());
     job->setQueueCount(0);
     job->setDelayCount(0);
-    job->setSlaDeadline(simTime()+job->getSuggestedTime()*2); //Poi andrà calcolato in qualche modo
+    job->setBalancerCount(0);
+    job->setSlaDeadline(simTime()+job->getSuggestedTime()*par("SLAmult"));
     job->setAppId(par("appId"));
-    job->setRealTime(par("realTime")); //Poi dipenderà dalla classe
+    job->setRealTime(par("realTime"));
+    job->setMultiHop(par("multiHop"));
     send(job, "out");
     // schedule next message
     trand=par("sendInterval").doubleValue();

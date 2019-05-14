@@ -32,16 +32,19 @@ namespace fog {
  *     simtime_t queuingTime; 		// total time spent standing in queues
  *     simtime_t serviceTime;  	// total time spent in servers
  *     simtime_t delayTime;    	// total time spent in delay modules
+ *     simtime_t balancerTime;    	// total time spent in Load balancing modules
  *     simtime_t probeTime;		// time passed waiting for probe
  *     simtime_t slaDeadline;		// deadline for SLA
  *     simtime_t suggestedTime;	// suggested service time. 
  * 
  *     int queueCount;             // the number of queue modules visited by the job
  *     int delayCount;             // the number of delay modules visited by the job
+ *     int balancerCount;			// the number of load balancing modules visited by the job
  *     int appId;					// ID of the considered cloud App
  *     int id;						// id of the msg
- *     int realTime;				// flag realtime, if 1-> drop job when SLA expires, if 0-> no drop
- *     int multiHop;				// flag multiHop, if 1-> job can be forwarded
+ *     // FIXME: should be bool rather than int
+ *     bool realTime;				// flag realtime, if 1-> drop job when SLA expires, if 0-> no drop
+ *     bool multiHop;				// flag multiHop, if 1-> job can be forwarded
  * }
  * </pre>
  */
@@ -52,15 +55,17 @@ class FogJob : public ::omnetpp::cMessage
     ::omnetpp::simtime_t queuingTime;
     ::omnetpp::simtime_t serviceTime;
     ::omnetpp::simtime_t delayTime;
+    ::omnetpp::simtime_t balancerTime;
     ::omnetpp::simtime_t probeTime;
     ::omnetpp::simtime_t slaDeadline;
     ::omnetpp::simtime_t suggestedTime;
     int queueCount;
     int delayCount;
+    int balancerCount;
     int appId;
     int id;
-    int realTime;
-    int multiHop;
+    bool realTime;
+    bool multiHop;
 
   private:
     void copy(const FogJob& other);
@@ -87,6 +92,8 @@ class FogJob : public ::omnetpp::cMessage
     virtual void setServiceTime(::omnetpp::simtime_t serviceTime);
     virtual ::omnetpp::simtime_t getDelayTime() const;
     virtual void setDelayTime(::omnetpp::simtime_t delayTime);
+    virtual ::omnetpp::simtime_t getBalancerTime() const;
+    virtual void setBalancerTime(::omnetpp::simtime_t balancerTime);
     virtual ::omnetpp::simtime_t getProbeTime() const;
     virtual void setProbeTime(::omnetpp::simtime_t probeTime);
     virtual ::omnetpp::simtime_t getSlaDeadline() const;
@@ -97,14 +104,16 @@ class FogJob : public ::omnetpp::cMessage
     virtual void setQueueCount(int queueCount);
     virtual int getDelayCount() const;
     virtual void setDelayCount(int delayCount);
+    virtual int getBalancerCount() const;
+    virtual void setBalancerCount(int balancerCount);
     virtual int getAppId() const;
     virtual void setAppId(int appId);
     virtual int getId() const;
     virtual void setId(int id);
-    virtual int getRealTime() const;
-    virtual void setRealTime(int realTime);
-    virtual int getMultiHop() const;
-    virtual void setMultiHop(int multiHop);
+    virtual bool getRealTime() const;
+    virtual void setRealTime(bool realTime);
+    virtual bool getMultiHop() const;
+    virtual void setMultiHop(bool multiHop);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const FogJob& obj) {obj.parsimPack(b);}

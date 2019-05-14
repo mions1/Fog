@@ -38,8 +38,6 @@ class FogPU : public cSimpleModule
         cMessage *endServiceMsg;
         cMessage *contextSwitchMsg;
         cMessage *timeoutMsg;
-        LoadUpdate *loadUpdate;
-        cMessage *dropUpdate;
         cQueue queue;
         //int capacity;
         bool fifo;
@@ -62,10 +60,14 @@ class FogPU : public cSimpleModule
         int totalJobs;
         int droppedJobsQueue;
         int droppedJobsTimeout;
+        // FIXME: during the processing, a job could be dropped.
+        // we should handle correctly this event; it's like the timeout case
+        // but we record it differently
+        int droppedJobsSLA;
         void changeState(int transition);
         void processCloudCongestionUpdateMessage(cMessage *msg);
         void processEndServiceMessage(cMessage *msg);
-        void processCloudAppJobMessage(cMessage *msg);
+        void processFogAppJobMessage(cMessage *msg);
         void processContextSwitchMessage(cMessage *msg);
         void processTimeoutMessage(cMessage *msg);
         void setRemainingTime(cMessage *job, simtime_t time);
@@ -73,13 +75,16 @@ class FogPU : public cSimpleModule
         void deleteRemainingTime(cMessage *job);
         void scheduleNextEvent();
         bool checkTimeoutExpired(FogJob *job, bool autoremove=true);
+        bool checkSlaExpired(FogJob *job, bool allowremove=true);
         void setTimeout(FogJob *job);
         void cancelTimeout(FogJob *job);
         void removeExpiredJobs();
+        void notifyLoad();
 
     public:
         FogPU();
         virtual ~FogPU();
+        static const char *getLoadUpdateName();
         int capacity;
         int length();
 
@@ -88,9 +93,8 @@ class FogPU : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
         virtual void finish();
         virtual int getCapacity();
-
         // hook functions to (re)define behaviour
-        // virtual void arrival(CloudAppJob *job);
+        // virtual void arrival(FogJob *job);
         virtual simtime_t setupService(FogJob *job);
         virtual void endService(FogJob *job);
         virtual void resumeService(FogJob *job);

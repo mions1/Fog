@@ -13,13 +13,34 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
-// TODO generated message class
-//
+package fog.simulations;
 
-namespace fog;
+import fog.FogNode;
+import fog.FogSink;
+import fog.FogSource;
 
-message LoadUpdate {
-	double busy;					//Status load 0->idle, 1-> busy, >1 with queue
-	int queueFull;					//1 if queue is full
+
+
+//
+// Sample network, consisting of a source and a sink.
+//
+network Fog1
+{
+    parameters:
+        int nSources = default(2);
+        // sink parameters
+    submodules:
+        source[nSources]: FogSource;
+        fog[nSources]: FogNode;
+        sink: FogSink;
+    connections:
+        for i=0..nSources-1 {
+            source[i].out --> fog[i].in++;
+            fog[i].out --> sink.in++;
+        };
+        for i=0..nSources-2, for j=i+1..nSources-1 {
+            fog[i].toNeighbors++ --> fog[j].fromNeighbors++;
+            fog[j].toNeighbors++ --> fog[i].fromNeighbors++;
+        }
+
 }

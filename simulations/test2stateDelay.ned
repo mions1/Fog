@@ -18,7 +18,7 @@ package fog.simulations;
 import fog.FogSource;
 import fog.CloudCongestionControl;
 import fog.CloudDelayCenter;
-import fog.CloudSink;
+import fog.FogSink;
 
 
 network Test2stateDelay
@@ -28,7 +28,7 @@ network Test2stateDelay
         source: FogSource;
         congestionCtl: CloudCongestionControl;
         delay: CloudDelayCenter;
-        sink: CloudSink;
+        sink: FogSink;
     connections:
         source.out --> delay.in++;
         delay.out --> sink.in++;

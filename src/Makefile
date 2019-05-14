@@ -33,22 +33,27 @@ O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 OBJS = \
     $O/CloudCongestionControl.o \
     $O/CloudDelayCenter.o \
-    $O/CloudSink.o \
     $O/FogDispatcherLoad.o \
     $O/FogDispatcherRR.o \
     $O/FogLoadBalancer.o \
     $O/FogPU.o \
     $O/FogPUTS.o \
+    $O/FogSequentialForwarding.o \
+    $O/FogSink.o \
     $O/FogSource.o \
     $O/CloudCongestionUpdate_m.o \
     $O/FogJob_m.o \
-    $O/LoadUpdate_m.o
+    $O/LoadUpdate_m.o \
+    $O/ProbeAnswer_m.o \
+    $O/ProbeQuery_m.o
 
 # Message files
 MSGFILES = \
     CloudCongestionUpdate.msg \
     FogJob.msg \
-    LoadUpdate.msg
+    LoadUpdate.msg \
+    ProbeAnswer.msg \
+    ProbeQuery.msg
 
 # SM files
 SMFILES =

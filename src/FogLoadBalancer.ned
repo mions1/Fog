@@ -22,7 +22,8 @@ simple FogLoadBalancer
 {
     
     parameters:
-        volatile int fanOut;
+        int fanOut;
+        int nApps;
         @display("i=block/fork");
         
     gates:
@@ -31,5 +32,4 @@ simple FogLoadBalancer
         input loadFromNeighbor[];
         output loadToNeighbor[];
         output out[];
-    
 }

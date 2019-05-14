@@ -13,13 +13,16 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
-// TODO generated message class
-//
+package fog;
 
-namespace fog;
-
-message LoadUpdate {
-	double busy;					//Status load 0->idle, 1-> busy, >1 with queue
-	int queueFull;					//1 if queue is full
+//
+// Consumes received messages and collects statistics
+//
+simple FogSink
+{
+    parameters:
+        @display("i=block/sink");
+        // FIXME: should use a map and make this parameter unrequired
+    gates:
+        input in[];
 }

@@ -1,0 +1,46 @@
+file 1461 1557771098                                            
+version 2
+run FogBase-0-20190513-20:11:34-6050
+attr configname FogBase
+attr datetime 20190513-20:11:34
+attr experiment FogBase
+attr inifile Fog1.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network Fog1
+attr processid 6050
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param Fog1.nSources 2
+param Fog1.source[*].sendInterval 2s
+param Fog1.source[*].suggestedTime "normal(1.67s, 0.036s)"
+param Fog1.source[*].appId 1
+param Fog1.source[*].SLAmult 10
+param Fog1.source[*].realTime true
+param Fog1.source[*].multiHop true
+param Fog1.source[*].maxInterval -1s
+param Fog1.fog[*].nApps 1
+param Fog1.fog[*].nServers 1
+param Fog1.fog[*].dispatcher.fanOut 1
+param Fog1.fog[*].server[*].serviceTime -1s
+param Fog1.fog[*].server[*].timeSlice 0.5s
+param Fog1.fog[*].server[*].timeout -1s
+param Fog1.fog[*].server[*].capacity -1
+param Fog1.fog[*].server[*].fifo true
+param Fog1.fog[*].server[*].maxServiceTime -1s
+
+vector 0 Fog1.sink responseTime_1 ETV
+vector 1 Fog1.sink delayTime_1 ETV
+vector 2 Fog1.sink queuingTime_1 ETV
+vector 3 Fog1.sink serviceTime_1 ETV
+vector 4 Fog1.sink balancerTime_1 ETV
+0	1162 70 23 28 1.632092353816 1.701852108167 2 1.632092353816 1.701852108167 3.333944461983 5.5600260494571
+1	1232 44 23 28 1.632092353816 1.701852108167 2 0 0 0 0
+2	1276 44 23 28 1.632092353816 1.701852108167 2 0 0 0 0
+3	1320 70 23 28 1.632092353816 1.701852108167 2 1.632092353816 1.701852108167 3.333944461983 5.5600260494571
+4	1390 70 23 28 1.632092353816 1.701852108167 2 1.632092353816 1.701852108167 3.333944461983 5.5600260494571
+

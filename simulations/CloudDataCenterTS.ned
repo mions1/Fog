@@ -16,7 +16,7 @@
 package fog.simulations;
 
 import fog.FogProcessingDelayPerServerTS;
-import fog.CloudSink;
+import fog.FogSink;
 
 
 //
@@ -27,13 +27,12 @@ network CloudDataCenterTS
     parameters:
         int nApps = default(1);
         // sink parameters
-        sink.maxApps = nApps;
     submodules:
         appProc[nApps]: FogProcessingDelayPerServerTS {
             parameters:
                 appId = index;
         }
-        sink: CloudSink;
+        sink: FogSink;
     connections:
         for i=0..nApps-1 {
             appProc[i].out --> sink.in++;

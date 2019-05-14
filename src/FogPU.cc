@@ -49,7 +49,7 @@ FogPU::~FogPU()
     {
         cOwnedObject *Del = (cOwnedObject *) this->defaultListGet(0);
         this->drop(Del);
-        if ((strcmp(Del->getName(), "loadUpdate") == 0) || (strcmp(Del->getName(), "dropUpdate") == 0))
+        if ((strcmp(Del->getName(), "loadUpdate") == 0))
         {
             delete Del;
             Del = NULL;
@@ -80,11 +80,10 @@ void FogPU::initialize()
     totalJobs = 0;
     droppedJobsQueue = 0;
     droppedJobsTimeout = 0;
-    loadUpdate->setBusy( (double)busy+queue.getLength() );
+    droppedJobsSLA = 0;
     endServiceMsg = new cMessage("end-service");
     contextSwitchMsg = new cMessage("context-switch");
     timeoutMsg = new cMessage("timeout");
-    dropUpdate = new cMessage("dropUpdate");
     fifo = par("fifo");
     capacity = par("capacity");
     timeSlice = par("timeSlice");
@@ -94,9 +93,9 @@ void FogPU::initialize()
 }
 
 /**
- * Schedulo il prossimo evento
- * Se il tempo rimanente al job è < timeSlice (in altre parole ha praticamente finito) allora schedulo la fine del job
- * Altrimenti, schedulo il cambio di contesto
+ * Schedule next event
+ * If remainingTime < timeSlice (that is, we are almost finished) we schedule the end of the job event
+ * otherwise, we schedule the context switch.
  */
 void FogPU::scheduleNextEvent()
 {
@@ -166,8 +165,8 @@ void FogPU::processCloudCongestionUpdateMessage(cMessage *msg)
 }
 
 /**
- * Cambio il contesto (quindi il job in esecuzione)
- * Se la coda non è vuota, scambio l'attuale processo in esecuzione con uno in coda
+ * Context switch )a job is executing).
+ * If queue is not empty, we exchange the currently executing job with another one in the queue.
  */
 void FogPU::processContextSwitchMessage(cMessage *msg)
 {
@@ -215,24 +214,24 @@ void FogPU::processEndServiceMessage(cMessage *msg)
     }
 }
 
-void FogPU::processCloudAppJobMessage(cMessage *msg)
+void FogPU::processFogAppJobMessage(cMessage *msg)
 {
-    EV << "processCloudAppJobMessage " << msg << "\n";
+    EV << "processFogAppJobMessage " << msg << "\n";
     FogJob *job = check_and_cast<FogJob *>(msg);
     setupService(job);
     // if timeout is expired, simply drop the job and continue
-    if (checkTimeoutExpired(job))
+    totalJobs++;
+    if (checkTimeoutExpired(job) || checkSlaExpired(job))
     {
         return;
     }
-    totalJobs++;
     if (!jobServiced)
     {
         // processor was idle
         jobServiced = job;
         //emit(busySignal, 1);
         changeState(ANY2BUSY);
-        EV << "processCloudAppJobMessage: service=" << getRemainingTime(jobServiced) << " job is " << jobServiced->getAppId() << "\n";
+        EV << "processFogAppJobMessage: service=" << getRemainingTime(jobServiced) << " job is " << jobServiced->getAppId() << "\n";
         resumeService(jobServiced);
         scheduleNextEvent();
     }
@@ -242,9 +241,7 @@ void FogPU::processCloudAppJobMessage(cMessage *msg)
         if (capacity >= 0 && queue.getLength() >= capacity)
         {
             EV << "Capacity full! Job dropped.\n";
-            loadUpdate->setQueueFull(1);
-            loadUpdate->setBusy( (double)busy+queue.getLength() );
-            send(loadUpdate, "loadUpdate");
+            notifyLoad();
             //if (ev.isGUI()) bubble("Dropped!");
             //emit(droppedSignal, 1);
             droppedJobsQueue++;
@@ -264,19 +261,16 @@ void FogPU::processTimeoutMessage(cMessage *msg)
 {
     EV << "Got Timeout Event";
     // drop current job
-
     if (checkTimeoutExpired(jobServiced))
     {
         // select new job
         removeExpiredJobs();
         if (queue.isEmpty())
         {
-            loadUpdate->setQueueFull(0);
-            loadUpdate->setBusy( (double)busy+queue.getLength() );
             jobServiced = NULL;
             //emit(busySignal, 0);
-            dropUpdate = new cMessage("dropUpdate", 2);
-            send(dropUpdate, "loadUpdate");
+            //dropUpdate = new cMessage("dropUpdate", 2);
+            //send(dropUpdate, "loadUpdate");
             changeState(ANY2IDLE);
         }
         else
@@ -285,11 +279,12 @@ void FogPU::processTimeoutMessage(cMessage *msg)
             //emit(queueLengthSignal, length());
             resumeService(jobServiced);
             EV << "processEndAppJobMessage: (new service time=" << getRemainingTime(jobServiced) << " new job is " << jobServiced->getId() << ")\n";
-            dropUpdate = new cMessage("dropUpdate", 2);
-            send(dropUpdate, "loadUpdate");
+            //dropUpdate = new cMessage("dropUpdate", 2);
+            //send(dropUpdate, "loadUpdate");
             changeState(ANY2BUSY);
             scheduleNextEvent();
         }
+        notifyLoad();
     }
 }
 
@@ -364,7 +359,7 @@ void FogPU::handleMessage(cMessage *msg)
                 }
                 else
                 {
-                    processCloudAppJobMessage(msg);
+                    processFogAppJobMessage(msg);
                 }
             }
         }
@@ -388,10 +383,10 @@ FogJob *FogPU::getFromQueue()
         else
         {
             job = (FogJob *) queue.back();
-            // FIXME this may have bad performance as remove uses linear search
+            // FIXME: this may have bad performance as remove uses linear search
             queue.remove(job);
         }
-    } while (checkTimeoutExpired(job));
+    } while (checkTimeoutExpired(job) || checkSlaExpired(job));
     return job;
 }
 
@@ -406,11 +401,16 @@ int FogPU::getCapacity()
 
 simtime_t FogPU::setupService(FogJob *job)
 {
-    // gather initial queueing time statistics
+    // gather initial queuing time statistics
     simtime_t t;
     //EV << "Setting up service of " << job->getId() << endl;
     job->setTimestamp();
-    t = par("serviceTime").doubleValue();
+    if (job->getSuggestedTime()>0)
+    {
+        t = job->getSuggestedTime();
+    } else {
+        t = par("serviceTime").doubleValue();
+    }
     EV << t << "---SERVICE TIME---" << endl;
     if (maxServiceTime > 0 && t > maxServiceTime)
     {
@@ -428,23 +428,23 @@ simtime_t FogPU::setupService(FogJob *job)
 void FogPU::endService(FogJob *job)
 {
     EV << "Finishing service of " << job->getName() << endl;
-
     //simtime_t d = simTime() - job->getTimestamp();
     //simtime_t d=stopService(job);
     stopService(job);
     //job->setServiceTime(job->getServiceTime() + d);
     deleteRemainingTime(job);
     cancelTimeout(job);
-    if (!checkTimeoutExpired(job))
+    if (!checkTimeoutExpired(job) && !checkSlaExpired(job))
     {
         send(job, "out");
-        loadUpdate->setBusy(0);
-        send(loadUpdate, "loadUpdate");
+        notifyLoad();
     }
+    /*
     else{
         dropUpdate = new cMessage("dropUpdate", 2);
         send(dropUpdate, "loadUpdate");
     }
+    */
 }
 
 /**
@@ -478,8 +478,8 @@ void FogPU::stopService(FogJob *job)
 }
 
 /**
- * Controllo se il job è in timeout
- * Se il job ha raggiunto il timeout allora viene eliminato se è impostato autoremove
+ * check if job has reached timeout.
+ * If autoremove is set, the job with expired timeout is purged
  */
 bool FogPU::checkTimeoutExpired(FogJob *job, bool autoremove)
 {
@@ -501,6 +501,27 @@ bool FogPU::checkTimeoutExpired(FogJob *job, bool autoremove)
     }
     return false;
 }
+
+bool FogPU::checkSlaExpired(FogJob *job, bool allowremove)
+{
+    if (job == NULL)
+    {
+        return false;
+    }
+    if (job->getRealTime() && (simTime()>job->getSlaDeadline()))
+    {
+        //EV << "Dropping job from checkSlaExpired()";
+        // drop and increase droppedJobSla
+        if (allowremove)
+        {
+            droppedJobsSLA++;
+            dropAndDelete(job);
+        }
+        return true;
+    }
+    return false;
+}
+
 
 /**
  * Imposto il timeout per il job in esecuzione
@@ -526,7 +547,7 @@ void FogPU::cancelTimeout(FogJob *job)
 }
 
 /*
- * Rimuove i jobs che sono scaduti per timeout
+ * Romove expired jobs (timout, queue lenght, SLA
  */
 void FogPU::removeExpiredJobs()
 {
@@ -541,14 +562,21 @@ void FogPU::removeExpiredJobs()
         if (checkTimeoutExpired(job, false))
         {
             //EV << "removing job" <<endl;
-            dropUpdate = new cMessage("dropUpdate", 2);
-           send(dropUpdate, "loadUpdate");
             queue.remove(job);
             // drop and increase droppedJobTimeout
             droppedJobsTimeout++;
             delete job;
         }
+        if (checkSlaExpired(job, false))
+        {
+            //EV << "removing job" <<endl;
+            queue.remove(job);
+            // drop and increase droppedJobsSLA
+            droppedJobsSLA++;
+            delete job;
+        }
     }
+    notifyLoad();
     //EV << "done."<< endl;
 }
 
@@ -592,7 +620,7 @@ void FogPU::changeState(int transition)
             } // else {changeState(BUSY2BUSY);}
             break;
     }
-    //loadUpdate->setBusy((double)busy+queue.getLength());
+    //notifyLoad();
 }
 
 void FogPU::finish()
@@ -610,7 +638,7 @@ void FogPU::finish()
         totalIdleTime += now - startIdleTime;
     }
     rho = totalBusyTime / (totalBusyTime + totalIdleTime);
-    //recordScalar("rho", rho);
+    recordScalar("rho", rho);
     // congestion ratio
     if (congested)
     {
@@ -621,14 +649,31 @@ void FogPU::finish()
         totalNCongestionTime += now - startNCongestionTime;
     }
     congRatio = totalCongestionTime / (totalCongestionTime + totalNCongestionTime);
-    /*
-     recordScalar("congestionRatio", congRatio);
-     // totalJobs, droppedJobs
-     recordScalar("totalJobs", totalJobs);
-     recordScalar("droppedJobsQueue", droppedJobsQueue);
-     recordScalar("droppedJobsTimout", droppedJobsTimeout);
-     recordScalar("droppedJobsTotal", droppedJobsQueue + droppedJobsTimeout);
-     */
+    // FIXME: These metrics should be per class
+    recordScalar("congestionRatio", congRatio);
+    // totalJobs, droppedJobs
+    recordScalar("totalJobs", totalJobs);
+    recordScalar("droppedJobsQueue", droppedJobsQueue);
+    recordScalar("droppedJobsTimout", droppedJobsTimeout);
+    recordScalar("droppedJobsSLA", droppedJobsSLA);
+    recordScalar("droppedJobsTotal", droppedJobsQueue + droppedJobsTimeout + droppedJobsSLA);
+}
+
+/**
+ * Compute local load and send message to LoadBalancer
+ */
+void FogPU::notifyLoad() {
+    LoadUpdate *loadUpdate = new LoadUpdate(getLoadUpdateName());
+    loadUpdate->setBusy((double)busy+queue.getLength());
+    if (queue.getLength() >= capacity && capacity > 0)
+        loadUpdate->setQueueFull(1);
+    else
+        loadUpdate->setQueueFull(0);
+    send(loadUpdate, "loadUpdate");
+}
+
+const char *FogPU::getLoadUpdateName(){
+    return "loadUpdate";
 }
 
 }

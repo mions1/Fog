@@ -22,9 +22,13 @@ simple FogSource
 {
     parameters:
         volatile double sendInterval @unit(s) = default(exponential(1s));
+        // parameters for face detection task 
+        volatile double suggestedTime @unit(s) = default(normal(1.67s, 0.036s));
+        double SLAmult = default(10);
         double maxInterval @unit(s) = default(-1s);
         int appId;
-        int realTime = default(0); //If 1 -> realtime
+        bool realTime = default(false); //If 1 -> realtime     
+        bool multiHop = default(false); //If 1 -> enable multihop     
         @display("i=block/source");
     gates:
         output out;

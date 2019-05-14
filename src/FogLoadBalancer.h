@@ -18,77 +18,54 @@
 
 #include <omnetpp.h>
 #include "FogJob_m.h"
+#include "ProbeAnswer_m.h"
+#include "ProbeQuery_m.h"
+#include "LoadUpdate_m.h"
 
 using namespace omnetpp;
 
 namespace fog {
+
+class ProbeQueue {
+    public:
+        static int nextQueryId;
+        int queryId;
+        FogJob* job;
+        int jobId;
+        std::vector<int> neighs;
+        std::vector<int> load;   //Answers are mapped with neighs, so load[0]->neigs[0]
+
+        static void addQuery(std::vector<int> neighs, std::map<int, ProbeQueue*> probesQueue, int jobId, FogJob* job);
+};
+
+// FIXME: questa classe non è mai usata.
+class Neighbor {
+    public:
+        int neigh; // FIXME: neigh, port: probabilmente uno dei due è superfluo.
+        int port; // FIXME: Verificare se il tipo è unsigned.
+        int load; // FIXME: il tipo dovrebbe essere float
+        int rtt; // FIXME: il tipo dovrebbe essere simtime_t
+        int lastSeen; // FIXME: il tipo dovrebbe essere simtime_t
+    };
+
+class LocalLoad {
+    public:
+        std::vector<int> port;  //we consider port as pu id. Ma serve questo vettore??
+        std::vector<int> load;
+
+        LocalLoad(int nServers);
+
+        void updateLoad(int pu, int newLoad);
+        int getLeastLoadPU();
+        int getLeastLoad();
+        int getIdlePU();
+};
 
 /**
  * TODO - Generated class
  */
 class FogLoadBalancer : public cSimpleModule
 {
-
-    private:
-        class ProbeQueue {
-            int jobs = 0;
-            int queries = 0;
-            public:
-                int queryId;
-                int jobId;
-                std::vector<int> neighs;
-                std::vector<bool> answer;   //Answers are mapped with neighs, so answer[0]->neigs[0]
-
-                void addQuery(std::vector<int> neighs) {
-                    queryId = queries;
-                    jobId = jobs;
-                    this->neighs = neighs;
-                    answer.resize(neighs.size(),false);
-                }
-        };
-
-        class Neighbor {
-            public:
-                int neigh;
-                int port;
-                int load;
-                int rtt;
-                int lastSeen;
-            };
-
-        class LocalLoad {
-            public:
-                std::vector<int> port;  //we consider port as pu id
-                std::vector<int> load;
-
-                LocalLoad(int nServers) {
-                    port.resize(nServers, 0);
-                    load.resize(nServers, 0);
-                    port.reserve(nServers);
-                    load.reserve(nServers);
-                }
-
-                int getLeastLoadPU() {
-                    int min = load.at(0);
-                    int minIndex = 0;
-                    for (int i = 1; i < port.size(); i++) {
-                        if (min > load.at(i)) {
-                            minIndex = i;
-                            min = load.at(i);
-                        }
-                    }
-                    return minIndex;
-                }
-
-                int getIdlePU() {
-                    for (int i = 0; i < port.size(); i++)
-                        if (load.at(i) == 0)
-                            return i;
-                    return -1;
-                }
-
-        };
-
 
     public:
         FogLoadBalancer();
@@ -97,35 +74,38 @@ class FogLoadBalancer : public cSimpleModule
     protected:
         int nServers;
         int nApps;
-        int nDroppedJobs;
         int queueCapacity;
 
         LocalLoad *localLoad;
         std::vector<int> probeGates;
+        std::map<int, ProbeQueue *> probesQueue;
 
+        // FIXME: Should be per-class
+        std::map<int, int> nJobsPerClass;
+        std::map<int, int> nLocalJobsPerClass;
+        std::map<int, int> nRemoteJobsPerClass;
+        std::map<int, int> nDroppedJobsPerClass;
+        std::map<int, int> nDroppedJobsSLAPerClass;
+        std::map<int, int> nProbesPerClass;
+        std::map<int, int> nProbeQueryPerClass;
+        std::map<int, int> nProbeAnswersPerClass;
+
+        int nJobs; // total number of jobs v
+        int nDroppedJobs;
+        int nDroppedJobsSLA; // number of jobs due to SLA violations
+        int nLocalJobs; // number of jobs sent to the local PU v
+        int nRemoteJobs; // number of jobs forwarded to a remote LB v
+        int nProbes; // number of probe started v
+        int nProbeQuery; // number of probe messages sent v
+        int nProbeAnswers; // number of useful probe answers received v
+        cOutVector *queryFanOut; // for each query we record the fanOut
+        cOutVector *answersPerQuery; // for each query we record how many answers we received before deciding
+        //cOutVector *localLoadAtQuery; // for each query we record the lowest local load
+        //cOutVector *remoteLoadAtQuery; // for each query we record the remote load
         /*
-        int probeSent;
-        int incID;
-        int answerIterator;
         double jobsTimedOut;
         double nJobsBlockedFromQueue;
-        double nJobs;
-        double nJobsSent;
-        double nJobsReceived;
-        int fanOut;
         double blockingProbability;
-        bool jobSent;
-        bool serverFound;
-        bool trovato;
-        bool ackCheck;
-        cQueue buffer;
-        cMessage *probeEvent;
-        cMessage *ackEvent;
-
-        cMessage *nackEvent;
-        std::vector<int> ackGates;
-        std::vector<int> probeAnswer;
-        std::vector<int> prova;
         */
 
 
@@ -133,7 +113,8 @@ class FogLoadBalancer : public cSimpleModule
         virtual void handleMessage(cMessage *msg);
 
         virtual void processJob(FogJob *job);   //If msg is a job, this function process it
-        virtual void processProbeAnswer();      //If msg is a probeAnswer, this function process it
+        virtual void processProbeAnswer(ProbeAnswer *answer);      //If msg is a probeAnswer, this function process it
+        virtual void processProbeQuery(ProbeQuery *probeQuery); //If msg is a probe request
 
         virtual bool decideProcessLocally(FogJob *job); //Decide if job have to be processed locally
         virtual bool decideForwardNow();                //Decide if job have to be processed now, so without probing
@@ -144,13 +125,23 @@ class FogLoadBalancer : public cSimpleModule
         virtual int selectNeighbor(std::vector<int> neighbors); //Select neighbor for send job based on probing
         virtual int selectLocalPU();    //Select localPU which going to process job
 
-        virtual bool checkIfDropJob(FogJob *job);   //Check if job is to be dropped
-        bool checkSLA(FogJob *job); //Check is SLA expired
+        void handleProbeQuery(cMessage *msg);
+
+        void handleLoadUpdate(LoadUpdate *loadUpdate);
+        virtual void finish();
+
+        virtual bool checkSlaExpired(FogJob *job);   //Check if job is to be dropped
+
+        void startProbes(FogJob *job);
+        void processLocally(FogJob *job);
 
         virtual std::vector<int> getNeighbors(int fanout);  //Get neighbors to send probing
         virtual int getFanout(); //Get fanout
         virtual int getSource(FogJob *job); //Get if arrived job is from internal or external
         virtual int getNumServers();    //Get number of servers in this Fog
+
+        static const char *getAnswerName();
+        static const char *getProbeQueryName();
 };
 
 } //namespace

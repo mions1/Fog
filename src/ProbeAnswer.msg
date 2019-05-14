@@ -13,13 +13,14 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
-// TODO generated message class
-//
-
 namespace fog;
 
-message LoadUpdate {
-	double busy;					//Status load 0->idle, 1-> busy, >1 with queue
-	int queueFull;					//1 if queue is full
+
+//CREATO PER POTER AGGIUNGER LA INFO SULLA QUERYID NELLA RISPOSTA AL PROBE
+//SE VOGLIAMO MANTENERE SOLO IL LOADUPDATE POSSIAMO AGGIUNGERE LI LA QUERYID
+//E SETTARLO A -1 SE LA INFO NON CI SERVE
+message ProbeAnswer {
+    double load;
+    int queryId;
+    int appId;
 }

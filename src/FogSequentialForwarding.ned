@@ -13,13 +13,24 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-//
-// TODO generated message class
-//
+package fog;
 
-namespace fog;
-
-message LoadUpdate {
-	double busy;					//Status load 0->idle, 1-> busy, >1 with queue
-	int queueFull;					//1 if queue is full
+//
+// TODO auto-generated module
+//
+simple FogSequentialForwarding
+{
+    
+    parameters:
+        int fanOut;
+        int nApps;
+        @display("i=block/fork");
+        
+    gates:
+        input in[];
+        input localLoad[];
+        input loadFromNeighbor[];
+        output loadToNeighbor[];
+        output out[];
+    
 }

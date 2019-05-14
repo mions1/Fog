@@ -19,6 +19,7 @@
 
 namespace fog {
 
+
     FogSequentialForwarding::FogSequentialForwarding() {
         // TODO Auto-generated constructor stub
 
@@ -28,22 +29,27 @@ namespace fog {
         // TODO Auto-generated destructor stub
     }
 
-    void FogSequentialForwarding::processJob(FogJob *job) {
-
+    bool FogSequentialForwarding::decideProcessLocally(FogJob *job) {
+        int pu = FogLoadBalancer::localLoad->getLeastLoadPU();
+        int thr = par("THR");
+        return (FogLoadBalancer::localLoad->load.at(pu) < thr);
     }
 
-    bool FogSequentialForwarding::decideProcessLocally(FogJob *job, NULL) {
-
+    bool FogSequentialForwarding::decideStartProbes(FogJob *job) {
+        return false;
     }
 
     int FogSequentialForwarding::getFanout() {
         return 0;
     }
 
+    int FogSequentialForwarding::selectNeighbor(std::vector<int> neighbors) {
+        std::random_shuffle(FogLoadBalancer::probeGates.begin(), FogLoadBalancer::probeGates.end());
+        return (FogLoadBalancer::probeGates.at(0));
+    }
 
-
-    void FogSequentialForwarding::handleMessage(cMessage *msg) {
-
+    bool FogSequentialForwarding::decideForwardNow() {
+        return false;
     }
 
 }

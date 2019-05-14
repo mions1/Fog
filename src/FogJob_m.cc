@@ -186,15 +186,17 @@ FogJob::FogJob(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
     this->queuingTime = 0;
     this->serviceTime = 0;
     this->delayTime = 0;
+    this->balancerTime = 0;
     this->probeTime = 0;
     this->slaDeadline = 0;
     this->suggestedTime = 0;
     this->queueCount = 0;
     this->delayCount = 0;
+    this->balancerCount = 0;
     this->appId = 0;
     this->id = 0;
-    this->realTime = 0;
-    this->multiHop = 0;
+    this->realTime = false;
+    this->multiHop = false;
 }
 
 FogJob::FogJob(const FogJob& other) : ::omnetpp::cMessage(other)
@@ -220,11 +222,13 @@ void FogJob::copy(const FogJob& other)
     this->queuingTime = other.queuingTime;
     this->serviceTime = other.serviceTime;
     this->delayTime = other.delayTime;
+    this->balancerTime = other.balancerTime;
     this->probeTime = other.probeTime;
     this->slaDeadline = other.slaDeadline;
     this->suggestedTime = other.suggestedTime;
     this->queueCount = other.queueCount;
     this->delayCount = other.delayCount;
+    this->balancerCount = other.balancerCount;
     this->appId = other.appId;
     this->id = other.id;
     this->realTime = other.realTime;
@@ -238,11 +242,13 @@ void FogJob::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->queuingTime);
     doParsimPacking(b,this->serviceTime);
     doParsimPacking(b,this->delayTime);
+    doParsimPacking(b,this->balancerTime);
     doParsimPacking(b,this->probeTime);
     doParsimPacking(b,this->slaDeadline);
     doParsimPacking(b,this->suggestedTime);
     doParsimPacking(b,this->queueCount);
     doParsimPacking(b,this->delayCount);
+    doParsimPacking(b,this->balancerCount);
     doParsimPacking(b,this->appId);
     doParsimPacking(b,this->id);
     doParsimPacking(b,this->realTime);
@@ -256,11 +262,13 @@ void FogJob::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->queuingTime);
     doParsimUnpacking(b,this->serviceTime);
     doParsimUnpacking(b,this->delayTime);
+    doParsimUnpacking(b,this->balancerTime);
     doParsimUnpacking(b,this->probeTime);
     doParsimUnpacking(b,this->slaDeadline);
     doParsimUnpacking(b,this->suggestedTime);
     doParsimUnpacking(b,this->queueCount);
     doParsimUnpacking(b,this->delayCount);
+    doParsimUnpacking(b,this->balancerCount);
     doParsimUnpacking(b,this->appId);
     doParsimUnpacking(b,this->id);
     doParsimUnpacking(b,this->realTime);
@@ -305,6 +313,16 @@ void FogJob::setServiceTime(::omnetpp::simtime_t serviceTime)
 void FogJob::setDelayTime(::omnetpp::simtime_t delayTime)
 {
     this->delayTime = delayTime;
+}
+
+::omnetpp::simtime_t FogJob::getBalancerTime() const
+{
+    return this->balancerTime;
+}
+
+void FogJob::setBalancerTime(::omnetpp::simtime_t balancerTime)
+{
+    this->balancerTime = balancerTime;
 }
 
 ::omnetpp::simtime_t FogJob::getProbeTime() const
@@ -357,6 +375,16 @@ void FogJob::setDelayCount(int delayCount)
     this->delayCount = delayCount;
 }
 
+int FogJob::getBalancerCount() const
+{
+    return this->balancerCount;
+}
+
+void FogJob::setBalancerCount(int balancerCount)
+{
+    this->balancerCount = balancerCount;
+}
+
 int FogJob::getAppId() const
 {
     return this->appId;
@@ -377,22 +405,22 @@ void FogJob::setId(int id)
     this->id = id;
 }
 
-int FogJob::getRealTime() const
+bool FogJob::getRealTime() const
 {
     return this->realTime;
 }
 
-void FogJob::setRealTime(int realTime)
+void FogJob::setRealTime(bool realTime)
 {
     this->realTime = realTime;
 }
 
-int FogJob::getMultiHop() const
+bool FogJob::getMultiHop() const
 {
     return this->multiHop;
 }
 
-void FogJob::setMultiHop(int multiHop)
+void FogJob::setMultiHop(bool multiHop)
 {
     this->multiHop = multiHop;
 }
@@ -462,7 +490,7 @@ const char *FogJobDescriptor::getProperty(const char *propertyname) const
 int FogJobDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 13+basedesc->getFieldCount() : 13;
+    return basedesc ? 15+basedesc->getFieldCount() : 15;
 }
 
 unsigned int FogJobDescriptor::getFieldTypeFlags(int field) const
@@ -487,8 +515,10 @@ unsigned int FogJobDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<13) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<15) ? fieldTypeFlags[field] : 0;
 }
 
 const char *FogJobDescriptor::getFieldName(int field) const
@@ -504,17 +534,19 @@ const char *FogJobDescriptor::getFieldName(int field) const
         "queuingTime",
         "serviceTime",
         "delayTime",
+        "balancerTime",
         "probeTime",
         "slaDeadline",
         "suggestedTime",
         "queueCount",
         "delayCount",
+        "balancerCount",
         "appId",
         "id",
         "realTime",
         "multiHop",
     };
-    return (field>=0 && field<13) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<15) ? fieldNames[field] : nullptr;
 }
 
 int FogJobDescriptor::findField(const char *fieldName) const
@@ -525,15 +557,17 @@ int FogJobDescriptor::findField(const char *fieldName) const
     if (fieldName[0]=='q' && strcmp(fieldName, "queuingTime")==0) return base+1;
     if (fieldName[0]=='s' && strcmp(fieldName, "serviceTime")==0) return base+2;
     if (fieldName[0]=='d' && strcmp(fieldName, "delayTime")==0) return base+3;
-    if (fieldName[0]=='p' && strcmp(fieldName, "probeTime")==0) return base+4;
-    if (fieldName[0]=='s' && strcmp(fieldName, "slaDeadline")==0) return base+5;
-    if (fieldName[0]=='s' && strcmp(fieldName, "suggestedTime")==0) return base+6;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queueCount")==0) return base+7;
-    if (fieldName[0]=='d' && strcmp(fieldName, "delayCount")==0) return base+8;
-    if (fieldName[0]=='a' && strcmp(fieldName, "appId")==0) return base+9;
-    if (fieldName[0]=='i' && strcmp(fieldName, "id")==0) return base+10;
-    if (fieldName[0]=='r' && strcmp(fieldName, "realTime")==0) return base+11;
-    if (fieldName[0]=='m' && strcmp(fieldName, "multiHop")==0) return base+12;
+    if (fieldName[0]=='b' && strcmp(fieldName, "balancerTime")==0) return base+4;
+    if (fieldName[0]=='p' && strcmp(fieldName, "probeTime")==0) return base+5;
+    if (fieldName[0]=='s' && strcmp(fieldName, "slaDeadline")==0) return base+6;
+    if (fieldName[0]=='s' && strcmp(fieldName, "suggestedTime")==0) return base+7;
+    if (fieldName[0]=='q' && strcmp(fieldName, "queueCount")==0) return base+8;
+    if (fieldName[0]=='d' && strcmp(fieldName, "delayCount")==0) return base+9;
+    if (fieldName[0]=='b' && strcmp(fieldName, "balancerCount")==0) return base+10;
+    if (fieldName[0]=='a' && strcmp(fieldName, "appId")==0) return base+11;
+    if (fieldName[0]=='i' && strcmp(fieldName, "id")==0) return base+12;
+    if (fieldName[0]=='r' && strcmp(fieldName, "realTime")==0) return base+13;
+    if (fieldName[0]=='m' && strcmp(fieldName, "multiHop")==0) return base+14;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -553,14 +587,16 @@ const char *FogJobDescriptor::getFieldTypeString(int field) const
         "simtime_t",
         "simtime_t",
         "simtime_t",
+        "simtime_t",
         "int",
         "int",
         "int",
         "int",
         "int",
-        "int",
+        "bool",
+        "bool",
     };
-    return (field>=0 && field<13) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<15) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **FogJobDescriptor::getFieldPropertyNames(int field) const
@@ -631,15 +667,17 @@ std::string FogJobDescriptor::getFieldValueAsString(void *object, int field, int
         case 1: return simtime2string(pp->getQueuingTime());
         case 2: return simtime2string(pp->getServiceTime());
         case 3: return simtime2string(pp->getDelayTime());
-        case 4: return simtime2string(pp->getProbeTime());
-        case 5: return simtime2string(pp->getSlaDeadline());
-        case 6: return simtime2string(pp->getSuggestedTime());
-        case 7: return long2string(pp->getQueueCount());
-        case 8: return long2string(pp->getDelayCount());
-        case 9: return long2string(pp->getAppId());
-        case 10: return long2string(pp->getId());
-        case 11: return long2string(pp->getRealTime());
-        case 12: return long2string(pp->getMultiHop());
+        case 4: return simtime2string(pp->getBalancerTime());
+        case 5: return simtime2string(pp->getProbeTime());
+        case 6: return simtime2string(pp->getSlaDeadline());
+        case 7: return simtime2string(pp->getSuggestedTime());
+        case 8: return long2string(pp->getQueueCount());
+        case 9: return long2string(pp->getDelayCount());
+        case 10: return long2string(pp->getBalancerCount());
+        case 11: return long2string(pp->getAppId());
+        case 12: return long2string(pp->getId());
+        case 13: return bool2string(pp->getRealTime());
+        case 14: return bool2string(pp->getMultiHop());
         default: return "";
     }
 }
@@ -658,15 +696,17 @@ bool FogJobDescriptor::setFieldValueAsString(void *object, int field, int i, con
         case 1: pp->setQueuingTime(string2simtime(value)); return true;
         case 2: pp->setServiceTime(string2simtime(value)); return true;
         case 3: pp->setDelayTime(string2simtime(value)); return true;
-        case 4: pp->setProbeTime(string2simtime(value)); return true;
-        case 5: pp->setSlaDeadline(string2simtime(value)); return true;
-        case 6: pp->setSuggestedTime(string2simtime(value)); return true;
-        case 7: pp->setQueueCount(string2long(value)); return true;
-        case 8: pp->setDelayCount(string2long(value)); return true;
-        case 9: pp->setAppId(string2long(value)); return true;
-        case 10: pp->setId(string2long(value)); return true;
-        case 11: pp->setRealTime(string2long(value)); return true;
-        case 12: pp->setMultiHop(string2long(value)); return true;
+        case 4: pp->setBalancerTime(string2simtime(value)); return true;
+        case 5: pp->setProbeTime(string2simtime(value)); return true;
+        case 6: pp->setSlaDeadline(string2simtime(value)); return true;
+        case 7: pp->setSuggestedTime(string2simtime(value)); return true;
+        case 8: pp->setQueueCount(string2long(value)); return true;
+        case 9: pp->setDelayCount(string2long(value)); return true;
+        case 10: pp->setBalancerCount(string2long(value)); return true;
+        case 11: pp->setAppId(string2long(value)); return true;
+        case 12: pp->setId(string2long(value)); return true;
+        case 13: pp->setRealTime(string2bool(value)); return true;
+        case 14: pp->setMultiHop(string2bool(value)); return true;
         default: return false;
     }
 }

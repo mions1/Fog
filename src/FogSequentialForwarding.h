@@ -16,8 +16,9 @@
 #ifndef FOGSEQUENTIALFORWARDING_H_
 #define FOGSEQUENTIALFORWARDING_H_
 
+#include <algorithm>
 #include <omnetpp.h>
-#include "../../../queueinglib/QueueingDefs.h"
+#include "../../queueinglib/QueueingDefs.h"
 #include <omnetpp/cmsgpar.h>
 #include <omnetpp/cqueue.h>
 #include "FogLoadBalancer.h"
@@ -31,6 +32,11 @@ namespace fog {
         public:
             FogSequentialForwarding();
             virtual ~FogSequentialForwarding();
+            bool decideProcessLocally(FogJob *job); //Decide if job have to be processed locally
+            bool decideStartProbes(FogJob *job);
+            int getFanout();
+            int selectNeighbor(std::vector<int> neighbors);
+            bool decideForwardNow();
 
         protected:
 
