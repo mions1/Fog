@@ -54,11 +54,12 @@ def getFiles(scaBase):
 	returns a list of files matching the regexp "<scaBase>-[0-9]+.sca"
 	"""
 	baseDir=os.path.dirname(os.path.abspath(scaBase))
-	fileRegexp="^"+os.path.basename(scaBase)+"-[0-9]+\.sca$"
-	#print "  baseDir: "+baseDir
-	#print "  fileRegexp: "+fileRegexp
+	#fileRegexp="^"+os.path.basename(scaBase)+"-[0-9]+\.sca$"
+	fileRegexp="^"+os.path.basename(scaBase)+"\.sca$"
+	#print("  baseDir: "+baseDir)
+	#print("  fileRegexp: "+fileRegexp)
 	matchedFiles=[baseDir+"/"+f for f in os.listdir(baseDir) if re.match(fileRegexp, f)]
-	#print matchedFiles
+	#print(matchedFiles)
 	return matchedFiles
 
 def getScalarName(s):
@@ -91,6 +92,7 @@ def parseScalars(scaFile, stats):
 		if re.match("^scalar.*", l):
 			r=l.split()
 			s=getScalarName(l)
+			#print(r)
 			v=float(r[3])
 			#print "f="+f+" s="+s+" v="+str(v)
 			if s in stats:

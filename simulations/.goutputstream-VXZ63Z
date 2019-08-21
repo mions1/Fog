@@ -1,0 +1,179 @@
+from os import path
+import os
+import statistics
+import sys, glob
+
+"""
+	Parsing dei file.sca
+	Usato per creare file.sp che contengono, in due colonne, i valori di rho ed i valori, ad es., del response time
+	crea un file.sp facendo la media dei valori di ogni run
+"""
+
+"""
+Prende i valori name dai files.sca che si trovano in dirpath
+creando un dizionario dove le key sono i file che creeremo (quindi le cat. dei run)
+e i valori sono i dati
+
+*Files -> dizionario, le key sono le cat. dei run
+        -> mentre gli elementi sono liste di ogni run
+*dirPath -> directory dove cercare i file
+"""
+def getValue(files, dirPath, name="avg_responseTime"):
+    values = dict()
+    for key in files:
+        for value in files[key]:
+            fileName = path.join(dirPath,value)
+            with open(fileName, 'r') as f:
+                for line in f:
+                    if "scalar" in line:
+                        if name in line:
+                            tmp = line.split()
+                            if key not in values:
+                                values[key] = list()
+                            values[key].append(float(tmp[-1]))
+    return values
+
+"""
+Restituisce la lista dei file con estensione .ext che si trovano in dir
+"""
+def getFiles(dir,ext):
+    files = [f for f in os.listdir(dir) if path.isfile(path.join(dir, f)) if f[-len(ext):]==ext]
+    return files
+
+"""
+Crea un nuovo file che ha 3 colonne:
+x -> X in comune
+y1-> Y del file1
+y2-> Y del file2
+"""
+def joinFiles(dir,files1, files2):
+
+    i=0
+    for i in range(len(files1)):
+        file1 = files1[i]
+        file2 = files2[i]
+        data1 = getListFromFile(path.join(dir,file1))
+        data2 = getListFromFile(path.join(dir, file2))
+        x = data1["x"]
+        y1 = data1["y"]
+        y2 = data2["y"]
+        f = open(path.join(dir,file1[:file1.index(".sp")]+"VS"+file2[:file2.index(".sp")]+"_joined.sp"), "w")
+        j = 0
+        for x in x:
+            f.write(str(x)+" "+str(y1[j])+" "+str(y2[j])+"\n")
+            j += 1
+        f.close()
+
+"""
+Divide la lista dei file, creata con getFiles, creando un dizionario in cui
+le key sono la categoria(nome configurazione senza #0-..-#n)
+i valori sono i dati cercati (es. response time)
+"""
+def divideByRun(scaFiles):
+    files = dict()
+    for f in scaFiles:
+        if f[:f.index("#")-1] not in files:
+            files[f[:f.index("#")-1]] = list()
+        files[f[:f.index("#")-1]].append(f)
+    return files
+
+"""
+Restituisce la media dei valori per ogni key nel dizionario
+usata per prendere la media dei valori di ogni run
+"""
+def getMeans(values):
+    means = dict()
+    for key in values:
+        means[key] = statistics.mean(values[key])
+    return means
+
+"""
+Non usata
+"""
+def getListFromFile(fileName, z=False):
+    means = {"x":[],"y":[],"z":[]}
+    with open(fileName,"r") as f:
+        for line in f:
+            split = line.split()
+            means["x"].append(float(split[0]))
+            means["y"].append(float(split[1]))
+            if z:
+                means["z"].append(float(split[2]))
+    return means
+
+"""
+	Usato per creare files.sp che contengono, in due colonne, per ogni valore di, ad es., rho, la media di, ad es., responseTime.
+	Per ogni run crea un file.sp unendo tutte le run di una stessa configurazione
+"""
+def makeFile(means, fileName, fileSuffix="", preset=1, header=False):
+    """
+    fileList = glob.glob(fileName+"*"+fileSuffix+"*.sp",recursive=False)
+    for file in fileList:
+        try:
+            os.remove(file)
+        except OSError:
+            print("Error while deleting")
+    """
+    i = 0
+    #Usato per configurazioni a cui cambiano mul e rho
+    if preset==1:
+        for key in means:
+            if "Base" not in key:
+                rho = key[key.index("rho_")+4:key.index("_MG")]
+                rho = float(rho[0]+"."+rho[1:])
+                mul = key[key.index("_")+1:key.index("-rho")]
+                MG = key[key.index("MG")+2:]
+                mean = means[key]
+                f = open(fileName+"-mul_"+str(mul)+"-MG_"+MG+";"+fileSuffix+".sp","a")
+                if i == 0 and header:
+                    f.write("#rho"+" "+"#"+fileSuffix)
+                    i += 1
+                f.write(str(rho)+" "+str(mean)+"\n")
+                f.close()
+    #Usato per configurazioni a cui cambiano mul, rho e thr
+    if preset==3:
+        for key in means:
+            if "Base" not in key:
+                rho = key[key.index("rho_")+4:key.index("-thr")]
+                rho = float(rho[0]+"."+rho[1:])
+                mul = key[key.index("_")+1:key.index("-rho")]
+                thr = key[key.index("thr_")+4:]
+                mean = means[key]
+                f = open(fileName+"-mul_"+str(mul)+"-rho_"+str(rho)+fileSuffix+".sp","a")
+                if i == 0:
+                    f.write("#thr"+" "+"#"+fileSuffix)
+                    i += 1
+                f.write(str(thr)+" "+str(mean)+"\n")
+                f.close()
+                   
+	#Usato per configurazioni a cui cambia la q-len
+    elif preset==2:
+        for key in means:
+            if "Base" not in key:
+                q_len = float(key[key.index("_")+1:key.index("-rho")])
+                mean = means[key]
+                f = open(fileName+fileSuffix+".sp","a")
+                if i == 0:
+                    f.write("#q_len"+" "+"#"+fileSuffix)
+                    i += 1
+                f.write(str(q_len)+" "+str(mean)+"\n")
+                f.close()
+
+if __name__=="__main__":
+    dir = sys.argv[1]
+    fileBase = sys.argv[2]
+    valueName = sys.argv[3]
+     
+    #print("Dir: "+str(dir))
+    scaFiles = getSca(dir)
+    #print("sca files: "+str(scaFiles))
+    dictRun = divideByRun(scaFiles)
+    """
+    #print("dict run: "+str(dictRun))
+    values = getValue(dictRun, dir,valueName)
+    #print ("Values: "+str(values))
+    means = getMeans(values)
+    #print(means)
+    makeFile(means, fileBase)
+    """  
+    

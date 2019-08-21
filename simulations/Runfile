@@ -1,44 +1,344 @@
-all:  results/NoTimeShared-0.sca results/NoTimeShared-1.sca results/NoTimeShared-2.sca results/NoTimeShared-3.sca results/NoTimeShared-4.sca results/TimeShared-0.sca results/TimeShared-1.sca results/TimeShared-2.sca results/TimeShared-3.sca results/TimeShared-4.sca
+all:  results/FogBase-0.sca results/FogBase-1.sca results/FogBase-2.sca results/FogBase-3.sca results/FogBase-4.sca results/Fog-mul_1-rho_02_MG1-0.sca results/Fog-mul_1-rho_02_MG1-1.sca results/Fog-mul_1-rho_02_MG1-2.sca results/Fog-mul_1-rho_02_MG1-3.sca results/Fog-mul_1-rho_02_MG1-4.sca results/Fog-mul_1-rho_05_MG1-0.sca results/Fog-mul_1-rho_05_MG1-1.sca results/Fog-mul_1-rho_05_MG1-2.sca results/Fog-mul_1-rho_05_MG1-3.sca results/Fog-mul_1-rho_05_MG1-4.sca results/Fog-mul_1-rho_08_MG1-0.sca results/Fog-mul_1-rho_08_MG1-1.sca results/Fog-mul_1-rho_08_MG1-2.sca results/Fog-mul_1-rho_08_MG1-3.sca results/Fog-mul_1-rho_08_MG1-4.sca results/Fog-mul_1-rho_09_MG1-0.sca results/Fog-mul_1-rho_09_MG1-1.sca results/Fog-mul_1-rho_09_MG1-2.sca results/Fog-mul_1-rho_09_MG1-3.sca results/Fog-mul_1-rho_09_MG1-4.sca results/Fog-mul_001-rho_02_MG1-0.sca results/Fog-mul_001-rho_02_MG1-1.sca results/Fog-mul_001-rho_02_MG1-2.sca results/Fog-mul_001-rho_02_MG1-3.sca results/Fog-mul_001-rho_02_MG1-4.sca results/Fog-mul_001-rho_05_MG1-0.sca results/Fog-mul_001-rho_05_MG1-1.sca results/Fog-mul_001-rho_05_MG1-2.sca results/Fog-mul_001-rho_05_MG1-3.sca results/Fog-mul_001-rho_05_MG1-4.sca results/Fog-mul_001-rho_08_MG1-0.sca results/Fog-mul_001-rho_08_MG1-1.sca results/Fog-mul_001-rho_08_MG1-2.sca results/Fog-mul_001-rho_08_MG1-3.sca results/Fog-mul_001-rho_08_MG1-4.sca results/Fog-mul_001-rho_09_MG1-0.sca results/Fog-mul_001-rho_09_MG1-1.sca results/Fog-mul_001-rho_09_MG1-2.sca results/Fog-mul_001-rho_09_MG1-3.sca results/Fog-mul_001-rho_09_MG1-4.sca results/Fog-mul_1-rho_02_MG20-0.sca results/Fog-mul_1-rho_02_MG20-1.sca results/Fog-mul_1-rho_02_MG20-2.sca results/Fog-mul_1-rho_02_MG20-3.sca results/Fog-mul_1-rho_02_MG20-4.sca results/Fog-mul_1-rho_05_MG20-0.sca results/Fog-mul_1-rho_05_MG20-1.sca results/Fog-mul_1-rho_05_MG20-2.sca results/Fog-mul_1-rho_05_MG20-3.sca results/Fog-mul_1-rho_05_MG20-4.sca results/Fog-mul_1-rho_08_MG20-0.sca results/Fog-mul_1-rho_08_MG20-1.sca results/Fog-mul_1-rho_08_MG20-2.sca results/Fog-mul_1-rho_08_MG20-3.sca results/Fog-mul_1-rho_08_MG20-4.sca results/Fog-mul_1-rho_09_MG20-0.sca results/Fog-mul_1-rho_09_MG20-1.sca results/Fog-mul_1-rho_09_MG20-2.sca results/Fog-mul_1-rho_09_MG20-3.sca results/Fog-mul_1-rho_09_MG20-4.sca results/Fog-mul_001-rho_02_MG20-0.sca results/Fog-mul_001-rho_02_MG20-1.sca results/Fog-mul_001-rho_02_MG20-2.sca results/Fog-mul_001-rho_02_MG20-3.sca results/Fog-mul_001-rho_02_MG20-4.sca results/Fog-mul_001-rho_05_MG20-0.sca results/Fog-mul_001-rho_05_MG20-1.sca results/Fog-mul_001-rho_05_MG20-2.sca results/Fog-mul_001-rho_05_MG20-3.sca results/Fog-mul_001-rho_05_MG20-4.sca results/Fog-mul_001-rho_08_MG20-0.sca results/Fog-mul_001-rho_08_MG20-1.sca results/Fog-mul_001-rho_08_MG20-2.sca results/Fog-mul_001-rho_08_MG20-3.sca results/Fog-mul_001-rho_08_MG20-4.sca results/Fog-mul_001-rho_09_MG20-0.sca results/Fog-mul_001-rho_09_MG20-1.sca results/Fog-mul_001-rho_09_MG20-2.sca results/Fog-mul_001-rho_09_MG20-3.sca results/Fog-mul_001-rho_09_MG20-4.sca
 
-results/NoTimeShared-0.sca: testServerTS.ini
-	rm -f results/NoTimeShared-0.sca results/NoTimeShared-0.vec results/NoTimeShared-0.vci
-	./run -u Cmdenv -c NoTimeShared -r 0 -f testServerTS.ini
+results/FogBase-0.sca: FogNoLB2.ini
+	rm -f results/FogBase-0.sca results/FogBase-0.vec results/FogBase-0.vci
+	./run -u Cmdenv -c FogBase -r 0 -f FogNoLB2.ini
 	sleep 10
-results/NoTimeShared-1.sca: testServerTS.ini
-	rm -f results/NoTimeShared-1.sca results/NoTimeShared-1.vec results/NoTimeShared-1.vci
-	./run -u Cmdenv -c NoTimeShared -r 1 -f testServerTS.ini
+results/FogBase-1.sca: FogNoLB2.ini
+	rm -f results/FogBase-1.sca results/FogBase-1.vec results/FogBase-1.vci
+	./run -u Cmdenv -c FogBase -r 1 -f FogNoLB2.ini
 	sleep 10
-results/NoTimeShared-2.sca: testServerTS.ini
-	rm -f results/NoTimeShared-2.sca results/NoTimeShared-2.vec results/NoTimeShared-2.vci
-	./run -u Cmdenv -c NoTimeShared -r 2 -f testServerTS.ini
+results/FogBase-2.sca: FogNoLB2.ini
+	rm -f results/FogBase-2.sca results/FogBase-2.vec results/FogBase-2.vci
+	./run -u Cmdenv -c FogBase -r 2 -f FogNoLB2.ini
 	sleep 10
-results/NoTimeShared-3.sca: testServerTS.ini
-	rm -f results/NoTimeShared-3.sca results/NoTimeShared-3.vec results/NoTimeShared-3.vci
-	./run -u Cmdenv -c NoTimeShared -r 3 -f testServerTS.ini
+results/FogBase-3.sca: FogNoLB2.ini
+	rm -f results/FogBase-3.sca results/FogBase-3.vec results/FogBase-3.vci
+	./run -u Cmdenv -c FogBase -r 3 -f FogNoLB2.ini
 	sleep 10
-results/NoTimeShared-4.sca: testServerTS.ini
-	rm -f results/NoTimeShared-4.sca results/NoTimeShared-4.vec results/NoTimeShared-4.vci
-	./run -u Cmdenv -c NoTimeShared -r 4 -f testServerTS.ini
+results/FogBase-4.sca: FogNoLB2.ini
+	rm -f results/FogBase-4.sca results/FogBase-4.vec results/FogBase-4.vci
+	./run -u Cmdenv -c FogBase -r 4 -f FogNoLB2.ini
 	sleep 10
-results/TimeShared-0.sca: testServerTS.ini
-	rm -f results/TimeShared-0.sca results/TimeShared-0.vec results/TimeShared-0.vci
-	./run -u Cmdenv -c TimeShared -r 0 -f testServerTS.ini
+results/Fog-mul_1-rho_02_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG1-0.sca results/Fog-mul_1-rho_02_MG1-0.vec results/Fog-mul_1-rho_02_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG1 -r 0 -f FogNoLB2.ini
 	sleep 10
-results/TimeShared-1.sca: testServerTS.ini
-	rm -f results/TimeShared-1.sca results/TimeShared-1.vec results/TimeShared-1.vci
-	./run -u Cmdenv -c TimeShared -r 1 -f testServerTS.ini
+results/Fog-mul_1-rho_02_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG1-1.sca results/Fog-mul_1-rho_02_MG1-1.vec results/Fog-mul_1-rho_02_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG1 -r 1 -f FogNoLB2.ini
 	sleep 10
-results/TimeShared-2.sca: testServerTS.ini
-	rm -f results/TimeShared-2.sca results/TimeShared-2.vec results/TimeShared-2.vci
-	./run -u Cmdenv -c TimeShared -r 2 -f testServerTS.ini
+results/Fog-mul_1-rho_02_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG1-2.sca results/Fog-mul_1-rho_02_MG1-2.vec results/Fog-mul_1-rho_02_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG1 -r 2 -f FogNoLB2.ini
 	sleep 10
-results/TimeShared-3.sca: testServerTS.ini
-	rm -f results/TimeShared-3.sca results/TimeShared-3.vec results/TimeShared-3.vci
-	./run -u Cmdenv -c TimeShared -r 3 -f testServerTS.ini
+results/Fog-mul_1-rho_02_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG1-3.sca results/Fog-mul_1-rho_02_MG1-3.vec results/Fog-mul_1-rho_02_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG1 -r 3 -f FogNoLB2.ini
 	sleep 10
-results/TimeShared-4.sca: testServerTS.ini
-	rm -f results/TimeShared-4.sca results/TimeShared-4.vec results/TimeShared-4.vci
-	./run -u Cmdenv -c TimeShared -r 4 -f testServerTS.ini
+results/Fog-mul_1-rho_02_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG1-4.sca results/Fog-mul_1-rho_02_MG1-4.vec results/Fog-mul_1-rho_02_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG1-0.sca results/Fog-mul_1-rho_05_MG1-0.vec results/Fog-mul_1-rho_05_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG1-1.sca results/Fog-mul_1-rho_05_MG1-1.vec results/Fog-mul_1-rho_05_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG1-2.sca results/Fog-mul_1-rho_05_MG1-2.vec results/Fog-mul_1-rho_05_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG1-3.sca results/Fog-mul_1-rho_05_MG1-3.vec results/Fog-mul_1-rho_05_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG1-4.sca results/Fog-mul_1-rho_05_MG1-4.vec results/Fog-mul_1-rho_05_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG1-0.sca results/Fog-mul_1-rho_08_MG1-0.vec results/Fog-mul_1-rho_08_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG1-1.sca results/Fog-mul_1-rho_08_MG1-1.vec results/Fog-mul_1-rho_08_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG1-2.sca results/Fog-mul_1-rho_08_MG1-2.vec results/Fog-mul_1-rho_08_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG1-3.sca results/Fog-mul_1-rho_08_MG1-3.vec results/Fog-mul_1-rho_08_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG1-4.sca results/Fog-mul_1-rho_08_MG1-4.vec results/Fog-mul_1-rho_08_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG1-0.sca results/Fog-mul_1-rho_09_MG1-0.vec results/Fog-mul_1-rho_09_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG1-1.sca results/Fog-mul_1-rho_09_MG1-1.vec results/Fog-mul_1-rho_09_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG1-2.sca results/Fog-mul_1-rho_09_MG1-2.vec results/Fog-mul_1-rho_09_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG1-3.sca results/Fog-mul_1-rho_09_MG1-3.vec results/Fog-mul_1-rho_09_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG1-4.sca results/Fog-mul_1-rho_09_MG1-4.vec results/Fog-mul_1-rho_09_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG1-0.sca results/Fog-mul_001-rho_02_MG1-0.vec results/Fog-mul_001-rho_02_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG1-1.sca results/Fog-mul_001-rho_02_MG1-1.vec results/Fog-mul_001-rho_02_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG1-2.sca results/Fog-mul_001-rho_02_MG1-2.vec results/Fog-mul_001-rho_02_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG1-3.sca results/Fog-mul_001-rho_02_MG1-3.vec results/Fog-mul_001-rho_02_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG1-4.sca results/Fog-mul_001-rho_02_MG1-4.vec results/Fog-mul_001-rho_02_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG1-0.sca results/Fog-mul_001-rho_05_MG1-0.vec results/Fog-mul_001-rho_05_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG1-1.sca results/Fog-mul_001-rho_05_MG1-1.vec results/Fog-mul_001-rho_05_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG1-2.sca results/Fog-mul_001-rho_05_MG1-2.vec results/Fog-mul_001-rho_05_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG1-3.sca results/Fog-mul_001-rho_05_MG1-3.vec results/Fog-mul_001-rho_05_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG1-4.sca results/Fog-mul_001-rho_05_MG1-4.vec results/Fog-mul_001-rho_05_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG1-0.sca results/Fog-mul_001-rho_08_MG1-0.vec results/Fog-mul_001-rho_08_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG1-1.sca results/Fog-mul_001-rho_08_MG1-1.vec results/Fog-mul_001-rho_08_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG1-2.sca results/Fog-mul_001-rho_08_MG1-2.vec results/Fog-mul_001-rho_08_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG1-3.sca results/Fog-mul_001-rho_08_MG1-3.vec results/Fog-mul_001-rho_08_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG1-4.sca results/Fog-mul_001-rho_08_MG1-4.vec results/Fog-mul_001-rho_08_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG1-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG1-0.sca results/Fog-mul_001-rho_09_MG1-0.vec results/Fog-mul_001-rho_09_MG1-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG1 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG1-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG1-1.sca results/Fog-mul_001-rho_09_MG1-1.vec results/Fog-mul_001-rho_09_MG1-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG1 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG1-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG1-2.sca results/Fog-mul_001-rho_09_MG1-2.vec results/Fog-mul_001-rho_09_MG1-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG1 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG1-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG1-3.sca results/Fog-mul_001-rho_09_MG1-3.vec results/Fog-mul_001-rho_09_MG1-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG1 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG1-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG1-4.sca results/Fog-mul_001-rho_09_MG1-4.vec results/Fog-mul_001-rho_09_MG1-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG1 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_02_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG20-0.sca results/Fog-mul_1-rho_02_MG20-0.vec results/Fog-mul_1-rho_02_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_02_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG20-1.sca results/Fog-mul_1-rho_02_MG20-1.vec results/Fog-mul_1-rho_02_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_02_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG20-2.sca results/Fog-mul_1-rho_02_MG20-2.vec results/Fog-mul_1-rho_02_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_02_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG20-3.sca results/Fog-mul_1-rho_02_MG20-3.vec results/Fog-mul_1-rho_02_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_02_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_02_MG20-4.sca results/Fog-mul_1-rho_02_MG20-4.vec results/Fog-mul_1-rho_02_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_02_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG20-0.sca results/Fog-mul_1-rho_05_MG20-0.vec results/Fog-mul_1-rho_05_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG20-1.sca results/Fog-mul_1-rho_05_MG20-1.vec results/Fog-mul_1-rho_05_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG20-2.sca results/Fog-mul_1-rho_05_MG20-2.vec results/Fog-mul_1-rho_05_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG20-3.sca results/Fog-mul_1-rho_05_MG20-3.vec results/Fog-mul_1-rho_05_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_05_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_05_MG20-4.sca results/Fog-mul_1-rho_05_MG20-4.vec results/Fog-mul_1-rho_05_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_05_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG20-0.sca results/Fog-mul_1-rho_08_MG20-0.vec results/Fog-mul_1-rho_08_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG20-1.sca results/Fog-mul_1-rho_08_MG20-1.vec results/Fog-mul_1-rho_08_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG20-2.sca results/Fog-mul_1-rho_08_MG20-2.vec results/Fog-mul_1-rho_08_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG20-3.sca results/Fog-mul_1-rho_08_MG20-3.vec results/Fog-mul_1-rho_08_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_08_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_08_MG20-4.sca results/Fog-mul_1-rho_08_MG20-4.vec results/Fog-mul_1-rho_08_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_08_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG20-0.sca results/Fog-mul_1-rho_09_MG20-0.vec results/Fog-mul_1-rho_09_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG20-1.sca results/Fog-mul_1-rho_09_MG20-1.vec results/Fog-mul_1-rho_09_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG20-2.sca results/Fog-mul_1-rho_09_MG20-2.vec results/Fog-mul_1-rho_09_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG20-3.sca results/Fog-mul_1-rho_09_MG20-3.vec results/Fog-mul_1-rho_09_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_1-rho_09_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_1-rho_09_MG20-4.sca results/Fog-mul_1-rho_09_MG20-4.vec results/Fog-mul_1-rho_09_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_1-rho_09_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG20-0.sca results/Fog-mul_001-rho_02_MG20-0.vec results/Fog-mul_001-rho_02_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG20-1.sca results/Fog-mul_001-rho_02_MG20-1.vec results/Fog-mul_001-rho_02_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG20-2.sca results/Fog-mul_001-rho_02_MG20-2.vec results/Fog-mul_001-rho_02_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG20-3.sca results/Fog-mul_001-rho_02_MG20-3.vec results/Fog-mul_001-rho_02_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_02_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_02_MG20-4.sca results/Fog-mul_001-rho_02_MG20-4.vec results/Fog-mul_001-rho_02_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_02_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG20-0.sca results/Fog-mul_001-rho_05_MG20-0.vec results/Fog-mul_001-rho_05_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG20-1.sca results/Fog-mul_001-rho_05_MG20-1.vec results/Fog-mul_001-rho_05_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG20-2.sca results/Fog-mul_001-rho_05_MG20-2.vec results/Fog-mul_001-rho_05_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG20-3.sca results/Fog-mul_001-rho_05_MG20-3.vec results/Fog-mul_001-rho_05_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_05_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_05_MG20-4.sca results/Fog-mul_001-rho_05_MG20-4.vec results/Fog-mul_001-rho_05_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_05_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG20-0.sca results/Fog-mul_001-rho_08_MG20-0.vec results/Fog-mul_001-rho_08_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG20-1.sca results/Fog-mul_001-rho_08_MG20-1.vec results/Fog-mul_001-rho_08_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG20-2.sca results/Fog-mul_001-rho_08_MG20-2.vec results/Fog-mul_001-rho_08_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG20-3.sca results/Fog-mul_001-rho_08_MG20-3.vec results/Fog-mul_001-rho_08_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_08_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_08_MG20-4.sca results/Fog-mul_001-rho_08_MG20-4.vec results/Fog-mul_001-rho_08_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_08_MG20 -r 4 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG20-0.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG20-0.sca results/Fog-mul_001-rho_09_MG20-0.vec results/Fog-mul_001-rho_09_MG20-0.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG20 -r 0 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG20-1.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG20-1.sca results/Fog-mul_001-rho_09_MG20-1.vec results/Fog-mul_001-rho_09_MG20-1.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG20 -r 1 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG20-2.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG20-2.sca results/Fog-mul_001-rho_09_MG20-2.vec results/Fog-mul_001-rho_09_MG20-2.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG20 -r 2 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG20-3.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG20-3.sca results/Fog-mul_001-rho_09_MG20-3.vec results/Fog-mul_001-rho_09_MG20-3.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG20 -r 3 -f FogNoLB2.ini
+	sleep 10
+results/Fog-mul_001-rho_09_MG20-4.sca: FogNoLB2.ini
+	rm -f results/Fog-mul_001-rho_09_MG20-4.sca results/Fog-mul_001-rho_09_MG20-4.vec results/Fog-mul_001-rho_09_MG20-4.vci
+	./run -u Cmdenv -c Fog-mul_001-rho_09_MG20 -r 4 -f FogNoLB2.ini
 	sleep 10
 
 clean:

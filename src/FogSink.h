@@ -31,21 +31,23 @@ class FogSink : public cSimpleModule
 {
   private:
     // statistics
-    std::map<int, cOutVector> responseTimeVector;
-    std::map<int, cOutVector> delayTimeVector;
-    std::map<int, cOutVector> queuingTimeVector;
-    std::map<int, cOutVector> serviceTimeVector;
-    std::map<int, cOutVector> balancerTimeVector;
-    std::map<int, cOutVector> balancerCountVector;
-    std::map<int, cPSquare> responseTimeStat;
-    std::map<int, cPSquare> delayTimeStat;
-    std::map<int, cPSquare> queuingTimeStat;
-    std::map<int, cPSquare> serviceTimeStat;
-    std::map<int, cPSquare> balancerTimeStat;
-    double get90percentile(cAbstractHistogram *);
-    void dumpStat(std::map<int, cPSquare> *, std::string);
-    // FIXME: linking error in this function
-    void initVector(std::map<int, cOutVector> *, int, std::string);
+    std::map<int, cOutVector *> responseTimeVector;
+    std::map<int, cOutVector *> delayTimeVector;
+    std::map<int, cOutVector *> queuingTimeVector;
+    std::map<int, cOutVector *> serviceTimeVector;
+    std::map<int, cOutVector *> balancerTimeVector;
+    std::map<int, cOutVector *> balancerCountVector;
+    std::map<int, cPSquare *> responseTimeStat;
+    std::map<int, cPSquare *> delayTimeStat;
+    std::map<int, cPSquare *> queuingTimeStat;
+    std::map<int, cPSquare *> serviceTimeStat;
+    std::map<int, cPSquare *> balancerCountStat;
+    std::map<int, cPSquare *> balancerTimeStat;
+    double getPercentile(cAbstractHistogram *, float);
+    void dumpStat(std::map<int, cPSquare *> *, std::string);
+    void cleanStat(std::map<int, cPSquare *> *);
+    void cleanVector(std::map<int, cOutVector *> *);
+    void initMaps(int);
 
   public:
     virtual ~FogSink();

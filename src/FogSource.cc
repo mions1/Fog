@@ -38,9 +38,8 @@ void FogSource::initialize()
 }
 
 /**
- * Gestione la creazione del job da parte della sorgente
- * Quando il timer scatta viene creato il job, inizializzato ed inviato 'fuori'
- * Viene schedulato il prossimo timer
+ * When the timer is triggered, the job is created, initialized and send 'out'
+ * Next timer is scheduled
  */
 void FogSource::handleMessage(cMessage *msg)
 {

@@ -17,6 +17,7 @@
 #define __FOG_LOADBALANCER_H_
 
 #include <omnetpp.h>
+#include <string>
 #include "FogJob_m.h"
 #include "ProbeAnswer_m.h"
 #include "ProbeQuery_m.h"
@@ -26,38 +27,47 @@ using namespace omnetpp;
 
 namespace fog {
 
+/**
+ * Class to manage probe queue
+ */
 class ProbeQueue {
     public:
-        static int nextQueryId;
-        int queryId;
-        FogJob* job;
-        int jobId;
-        std::vector<int> neighs;
-        std::vector<int> load;   //Answers are mapped with neighs, so load[0]->neigs[0]
+        static int nextQueryId; // auto increment id for enqueued query
 
+        int queryId;
+        FogJob* job;    // enqueued job
+        int jobId;      // job id of enqueued job
+        std::vector<int> neighs;    // list of neighs to which the probe has been sent
+        std::vector<int> load;   //Neighs' answers, these are mapped with neighs, so load[0]->neigs[0]
+
+        //Add a new query to queue
         static void addQuery(std::vector<int> neighs, std::map<int, ProbeQueue*> probesQueue, int jobId, FogJob* job);
+        //Giving a jobid, return its probe queue
+        static ProbeQueue* getQueueFromJobId(int jobId, std::map<int, ProbeQueue *> probesQueue);
+        //Get least load PU
+        int getLeastLoadPU();
+        //Get least load
+        int getLeastLoad();
 };
 
-// FIXME: questa classe non è mai usata.
-class Neighbor {
-    public:
-        int neigh; // FIXME: neigh, port: probabilmente uno dei due è superfluo.
-        int port; // FIXME: Verificare se il tipo è unsigned.
-        int load; // FIXME: il tipo dovrebbe essere float
-        int rtt; // FIXME: il tipo dovrebbe essere simtime_t
-        int lastSeen; // FIXME: il tipo dovrebbe essere simtime_t
-    };
-
+/**
+ * Class to manage localLoad (load of local PU)
+ */
 class LocalLoad {
     public:
-        std::vector<int> port;  //we consider port as pu id. Ma serve questo vettore??
-        std::vector<int> load;
+
+        int lastPu;             // last PU to which the job was sent
+        std::vector<int> load;  // load for each pu
 
         LocalLoad(int nServers);
 
+        //Update load of a PU
         void updateLoad(int pu, int newLoad);
-        int getLeastLoadPU();
+        //Get least load PU
+        int getLeastLoadPU(bool readOnly);
+        //Get least load
         int getLeastLoad();
+        //Get a idle PU
         int getIdlePU();
 };
 
@@ -72,76 +82,66 @@ class FogLoadBalancer : public cSimpleModule
         virtual ~FogLoadBalancer();
 
     protected:
-        int nServers;
-        int nApps;
-        int queueCapacity;
+        int nServers;       //PU number
+        int nApps;          // Appid number
+        int queueCapacity;  // PU's queue capacity
 
         LocalLoad *localLoad;
-        std::vector<int> probeGates;
+        std::vector<int> probeGates;    // gates for neighs
         std::map<int, ProbeQueue *> probesQueue;
 
-        // FIXME: Should be per-class
-        std::map<int, int> nJobsPerClass;
-        std::map<int, int> nLocalJobsPerClass;
-        std::map<int, int> nRemoteJobsPerClass;
-        std::map<int, int> nDroppedJobsPerClass;
-        std::map<int, int> nDroppedJobsSLAPerClass;
-        std::map<int, int> nProbesPerClass;
-        std::map<int, int> nProbeQueryPerClass;
-        std::map<int, int> nProbeAnswersPerClass;
+        //Statics
+            // per class
+        std::map<int, int> nJobsPerClass;       // total number of jobs
+        std::map<int, int> nLocalJobsPerClass;  // total number of jobs sent to local PU
+        std::map<int, int> nRemoteJobsPerClass; // total number of jobs forwarded to another LB
+        std::map<int, int> nDroppedJobsSLAPerClass; // number of jobs dropped due to SLA violations
+        std::map<int, int> nProbesPerClass;     // number of probes started
+        std::map<int, int> nProbeQueryPerClass; // number of probes messages sent
+        std::map<int, int> nProbeAnswersPerClass;   // number of answers received
 
-        int nJobs; // total number of jobs v
-        int nDroppedJobs;
+        int nJobs; // total number of jobs
+        int nInternalJobs; // total number of jobs arrived from source
+        int nExternalJobs; // total number of jobs arrived from another LB
         int nDroppedJobsSLA; // number of jobs due to SLA violations
-        int nLocalJobs; // number of jobs sent to the local PU v
-        int nRemoteJobs; // number of jobs forwarded to a remote LB v
-        int nProbes; // number of probe started v
-        int nProbeQuery; // number of probe messages sent v
-        int nProbeAnswers; // number of useful probe answers received v
-        cOutVector *queryFanOut; // for each query we record the fanOut
-        cOutVector *answersPerQuery; // for each query we record how many answers we received before deciding
-        //cOutVector *localLoadAtQuery; // for each query we record the lowest local load
-        //cOutVector *remoteLoadAtQuery; // for each query we record the remote load
-        /*
-        double jobsTimedOut;
-        double nJobsBlockedFromQueue;
-        double blockingProbability;
-        */
-
+        int nLocalJobs; // number of jobs sent to the local PU
+        int nRemoteJobs; // number of jobs forwarded to a remote LB
+        int nProbes; // number of probe started
+        int nProbeQuery; // number of probe messages sent
+        int nProbeAnswers; // number of useful probe answers received
 
         virtual void initialize();
         virtual void handleMessage(cMessage *msg);
 
-        virtual void processJob(FogJob *job);   //If msg is a job, this function process it
-        virtual void processProbeAnswer(ProbeAnswer *answer);      //If msg is a probeAnswer, this function process it
-        virtual void processProbeQuery(ProbeQuery *probeQuery); //If msg is a probe request
+        virtual void processJob(FogJob *job);   // if incoming msg is a job, this function process it
+        virtual void processProbeAnswer(ProbeAnswer *answer);      // if incoming msg is a probeAnswer, this function process it
+        virtual void processProbeQuery(ProbeQuery *probeQuery); // if incoming msg is a probe request
 
-        virtual bool decideProcessLocally(FogJob *job); //Decide if job have to be processed locally
-        virtual bool decideForwardNow();                //Decide if job have to be processed now, so without probing
-        virtual bool decideStartProbes(FogJob *job);    //Decide if start probing
+        void handleLoadUpdate(LoadUpdate *loadUpdate);  // when arrive a local load update
 
-        virtual void forwardJob(FogJob *job, char *gateName, int gateIndex); //Forward job at the gateName port
-
-        virtual int selectNeighbor(std::vector<int> neighbors); //Select neighbor for send job based on probing
-        virtual int selectLocalPU();    //Select localPU which going to process job
-
-        void handleProbeQuery(cMessage *msg);
-
-        void handleLoadUpdate(LoadUpdate *loadUpdate);
-        virtual void finish();
-
-        virtual bool checkSlaExpired(FogJob *job);   //Check if job is to be dropped
+        virtual bool decideProcessLocally(FogJob *job); // decide if job have to be processed locally
+        virtual bool decideForwardNow(FogJob* job, int queryId);    // decide if job have to be forward now, so without wait other probes
+        virtual bool decideStartProbes(FogJob *job);    // decide if start probing
 
         void startProbes(FogJob *job);
         void processLocally(FogJob *job);
+        virtual void forwardJob(FogJob *job, char *gateName, int gateIndex); // forward job at the gateName port
 
-        virtual std::vector<int> getNeighbors(int fanout);  //Get neighbors to send probing
-        virtual int getFanout(); //Get fanout
-        virtual int getSource(FogJob *job); //Get if arrived job is from internal or external
-        virtual int getNumServers();    //Get number of servers in this Fog
+        virtual int selectNeighbor(std::vector<int> neighbors); // select neighbor to send job based on probing
+        virtual int selectLocalPU();    // select localPU which going to process job
+
+        virtual bool checkSlaExpired(FogJob *job);   // check if job is to be dropped due SLA violation
+        virtual std::vector<int> getNeighbors(int fanout);  // get list of neighbors to send probing
+        virtual int getFanout(); // get fanout
+        int getNumServers();    // get number of servers in this Fog node
+        int getSource(FogJob *job); // says if arrived job is from internal (source) or from external (other LB)
+
+        void dumpStat(std::map<int, int> *map, std::string name);
+        virtual void finish();
 
         static const char *getAnswerName();
         static const char *getProbeQueryName();
+
 };
 
 } //namespace

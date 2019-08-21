@@ -1,0 +1,17 @@
+I grafici in vario_thr sono divisi in 2 cartelle che rappresentano il proctimeMul considerato:
+    *mul001
+    *mul1
+All'interno di queste cartelle ci sono altre 3 cartelle che rappresentano la 'Y' del grafico:
+    *responseTime
+    *droppedJobs
+    *hop
+All'interno di queste cartelle i file sono divisi in 3 numeri (es. g1.png,g2.png,g3.png):
+    *1: rho 0.2
+    *2: rho 0.5
+    *3: rho 0.9
+---------------------------------------------------------------------------------------------------
+Discorso analogo per cartella vario_rho:
+    *1: thr 1
+    *2: thr 5
+    *3: thr 15
+    *4: thr 20

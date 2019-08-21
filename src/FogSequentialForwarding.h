@@ -30,12 +30,15 @@ using namespace omnetpp;
 namespace fog {
     class FogSequentialForwarding: public FogLoadBalancer {
         public:
+            int thr;
+
             FogSequentialForwarding();
             virtual ~FogSequentialForwarding();
-            bool decideProcessLocally(FogJob *job); //Decide if job have to be processed locally
-            bool decideStartProbes(FogJob *job);
+            void initialize();
+            bool decideProcessLocally(FogJob *job); // decide if job have to be processed locally
+            bool decideStartProbes(FogJob *job);    // decide if start probes
             int getFanout();
-            int selectNeighbor(std::vector<int> neighbors);
+            int selectNeighbor(std::vector<int> neighbors); // select neigh to forward job
             bool decideForwardNow();
 
         protected:

@@ -1,0 +1,21 @@
+SCRIPT PER L'ANALISI DEI RISULTATI DEI FILE .SCA
+
+>scaParse: mette a disposizione alcune funzioni per la manipolazioni dei file.sca
+>plot: mette a disposizione alcune funzioni per la costruzione dei grafici
+>analysis_sca: mette a disposizione alcune funzioni per la manipolazione dei file.sca partendo dalle funzioni di scaParse
+
+POI VENGONO CREATI SCRIPT AD-HOC A SECONDA DELL'ESPERIMENTO:
+
+>nolb: per gli esperimenti dove viene utilizzato un fog senza LB e variato rho e mul
+>qlen: per gli esperimenti dove viene utilizzato un fog senza LB e variata la QLen (oltre rho e mul)
+>tsvsnots: per il confronto tra due nolb dove in uno viene utilizzato time-sharing e l'altro no
+>seqfor: per gli esperimenti utilizzando sequential forward al variare di thr (oltre rho e mul)
+>sfvsnolb: confronto tra l'utilizzo di sf e nolb
+(P.S. è stato effettuato un refractoring, questi script andranno ricontrollati per validarne il funzionamento)
+
+
+
+ALTRI SCRIPT ANCORA NON VENGONO USATI:
+
+>analysis_vec
+>vectorParse

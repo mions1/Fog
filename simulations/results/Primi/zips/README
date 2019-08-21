@@ -1,0 +1,16 @@
+FogNoLB:
+    >Esperimento senza load balancer e senza Time-Sharing
+
+FogNoLBTS:
+    >Esperimento senza LB e con TS (timeslice = 0.1s)
+
+FogNoLBTSVSNoTS:
+    >Confronto tra i primi due esperimenti
+    
+FogQLen:
+    >Esperimento variando capacità di coda
+    
+FogSF:
+    >Esperimento su Sequential Forward
+    
+Tutti gli esperimenti sono fatti con 5 run da 10800s e con 100 sorgenti.

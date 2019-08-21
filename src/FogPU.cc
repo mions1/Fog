@@ -7,6 +7,7 @@
 // `license' for details on this and other legal matters.
 //
 
+#include <exception>
 #include "FogPU.h"
 #include "FogJob_m.h"
 #include "CloudCongestionUpdate_m.h"
@@ -103,18 +104,15 @@ void FogPU::scheduleNextEvent()
     simtime_t remainingTime, now;
     now = simTime();
     remainingTime = getRemainingTime(jobServiced);
-    //EV << "scheduleNextEvent (remainingTime=" << remainingTime << "s, jobId=" << jobServiced->getId()<<")\n";
     if ((remainingTime <= timeSlice) || (timeSlice <= 0))
     {
         setRemainingTime(jobServiced, remainingTime);
         scheduleAt(now + (remainingTime * congestionMultiplier), endServiceMsg);
-        //EV << "will schedule endService\n";
     }
     else
     {
         setRemainingTime(jobServiced, remainingTime - timeSlice);
         scheduleAt(now + (timeSlice * congestionMultiplier), contextSwitchMsg);
-        //EV << "will schedule contextSwitch\n";
     }
 }
 
@@ -184,8 +182,6 @@ void FogPU::processContextSwitchMessage(cMessage *msg)
         // resume service of new job
         resumeService(jobServiced);
     }
-    //EV << "processContextSwitchMessage (remainingTime=" << getRemainingTime(jobServiced) << " job serviced " << jobServiced->getId()  << ")\n";
-    // service
     scheduleNextEvent();
 }
 
@@ -245,6 +241,7 @@ void FogPU::processFogAppJobMessage(cMessage *msg)
             //if (ev.isGUI()) bubble("Dropped!");
             //emit(droppedSignal, 1);
             droppedJobsQueue++;
+
             delete job;
             return;
         }
@@ -331,10 +328,6 @@ void FogPU::deleteRemainingTime(cMessage *job)
 
 void FogPU::handleMessage(cMessage *msg)
 {
-    //EV << "handling message " << msg;
-    //if (endServiceMsg->isScheduled()) {EV << " endSch=true";}
-    //if (contextSwitchMsg->isScheduled()) {EV << " ctxSch=true";}
-    //EV << "\n";
     if (msg == timeoutMsg)
     {
         processTimeoutMessage(msg);
@@ -368,7 +361,7 @@ void FogPU::handleMessage(cMessage *msg)
 }
 
 /**
- * Prende un job dalla coda dalla testa se FIFO, dalla coda altrimenti
+ * Get a job from queue. If FIFO=True, get from head.
  */
 FogJob *FogPU::getFromQueue()
 {
@@ -394,6 +387,7 @@ int FogPU::length()
 {
     return queue.getLength();
 }
+
 int FogPU::getCapacity()
 {
     return this->capacity;
@@ -403,7 +397,6 @@ simtime_t FogPU::setupService(FogJob *job)
 {
     // gather initial queuing time statistics
     simtime_t t;
-    //EV << "Setting up service of " << job->getId() << endl;
     job->setTimestamp();
     if (job->getSuggestedTime()>0)
     {
@@ -421,9 +414,9 @@ simtime_t FogPU::setupService(FogJob *job)
 }
 
 /**
- * Quando un job ha finito la sua esecuzione
- * Se non è scaduto ok
- * Se è scaduto viene droppato
+ * When job is finished being processed
+ *  > if it isn't expired, ok
+ *  > if it expired, it is drop
  */
 void FogPU::endService(FogJob *job)
 {
@@ -448,8 +441,8 @@ void FogPU::endService(FogJob *job)
 }
 
 /**
- * Ripristino un job dalla coda all'esecuzione
- * Imposto il tempo di quanto è stato in coda
+ * Resume a job from queue
+ * Set balancer time (how long it has been in the queue)
  */
 void FogPU::resumeService(FogJob *job)
 {
@@ -463,8 +456,8 @@ void FogPU::resumeService(FogJob *job)
 }
 
 /**
- * Fermo l'attuale processo (ad es. per il cambio contesto)
- * Imposto il timeService al timeService effettuato fin'ora + il tempo effettuato nell'ultima esecuzione
+ * Stop current process (ex. for context switch)
+ * Set time service (how long it has been in execution)
  */
 void FogPU::stopService(FogJob *job)
 {
@@ -495,6 +488,7 @@ bool FogPU::checkTimeoutExpired(FogJob *job, bool autoremove)
             //EV << "Dropping job from checkTimeoutExpired()";
             // drop and increase droppedJobTimeout
             droppedJobsTimeout++;
+            queue.remove(job);
             delete job;
         }
         return true;
@@ -515,7 +509,8 @@ bool FogPU::checkSlaExpired(FogJob *job, bool allowremove)
         if (allowremove)
         {
             droppedJobsSLA++;
-            dropAndDelete(job);
+            queue.remove(job);
+            delete job;
         }
         return true;
     }
@@ -524,7 +519,7 @@ bool FogPU::checkSlaExpired(FogJob *job, bool allowremove)
 
 
 /**
- * Imposto il timeout per il job in esecuzione
+ * Set timeout for current job
  */
 void FogPU::setTimeout(FogJob *job)
 {
@@ -547,41 +542,52 @@ void FogPU::cancelTimeout(FogJob *job)
 }
 
 /*
- * Romove expired jobs (timout, queue lenght, SLA
+ * Remove expired jobs (timeout, queue length, SLA
  */
 void FogPU::removeExpiredJobs()
 {
     // iterate over queue
     //EV << "FogPU::removeExpiredJobs()..."<< endl;
+    std::vector<FogJob *> expiredJobs;  // support vector for expired jobs
+                                        // at the end of the loop, they will be removed
     for (cQueue::Iterator i(queue); !i.end(); ++i)
     {
         //CloudAppJob *job=check_and_cast<CloudAppJob *>((*i)++);
         //CloudAppJob *job=check_and_cast<CloudAppJob *>(*i);
+
         FogJob *job = check_and_cast<FogJob *>(*i);
+
         // if job is expired the job is removed
         if (checkTimeoutExpired(job, false))
         {
             //EV << "removing job" <<endl;
-            queue.remove(job);
-            // drop and increase droppedJobTimeout
+            expiredJobs.push_back(job);
+            // increase droppedJobTimeout
             droppedJobsTimeout++;
-            delete job;
+        } else {
+            if (checkSlaExpired(job, false))
+            {
+                //EV << "removing job" <<endl;
+                expiredJobs.push_back(job);
+                // increase droppedJobsSLA
+                droppedJobsSLA++;
+            }
         }
-        if (checkSlaExpired(job, false))
-        {
-            //EV << "removing job" <<endl;
-            queue.remove(job);
-            // drop and increase droppedJobsSLA
-            droppedJobsSLA++;
-            delete job;
-        }
+
     }
+
+    //Removing expired jobs
+    for (FogJob *job: expiredJobs) {
+        queue.remove(job);
+        delete job;
+    }
+
     notifyLoad();
     //EV << "done."<< endl;
 }
 
 /**
- * Cambia lo stato del server
+ * Change server status (busy, idle)
  */
 void FogPU::changeState(int transition)
 {
@@ -660,7 +666,7 @@ void FogPU::finish()
 }
 
 /**
- * Compute local load and send message to LoadBalancer
+ * Compute local load and send message to LoadBalancer (localLoadUpdate)
  */
 void FogPU::notifyLoad() {
     LoadUpdate *loadUpdate = new LoadUpdate(getLoadUpdateName());

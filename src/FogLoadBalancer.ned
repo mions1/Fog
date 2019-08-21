@@ -23,7 +23,6 @@ simple FogLoadBalancer
     
     parameters:
         int fanOut;
-        int nApps;
         @display("i=block/fork");
         
     gates:

@@ -29,6 +29,7 @@
 //
 
 #include <algorithm>
+#include <string>
 #include "LoadUpdate_m.h"
 #include "FogLoadBalancer.h"
 #include "FogJob_m.h"
@@ -42,11 +43,8 @@ namespace fog {
     const int INTERNAL_JOB = 0;
     const int EXTERNAL_JOB = 1;
 
-    int ProbeQueue::nextQueryId = 0; //Needed for using this static member
+    int ProbeQueue::nextQueryId = 0; // needed for using this static member
 
-    /*
-     * Implementation classes
-     */
     /**
      * Add the newer probeQuery at ProbeQueue queue.
      */
@@ -60,28 +58,26 @@ namespace fog {
         nextQueryId++;
     }
 
-    LocalLoad::LocalLoad(int nServers) {
-        port.resize(nServers, 0);
-        load.resize(nServers, 0);
-        port.reserve(nServers);
-        load.reserve(nServers);
+    /**
+     * Giving job id, return its probeQueue
+     */
+    ProbeQueue* ProbeQueue::getQueueFromJobId(int jobId, std::map<int, ProbeQueue*> pq) {
+        std::map<int, ProbeQueue*>::iterator it;
+        for ( it = pq.begin(); it != pq.end(); it++ ) {
+            if (it->second->jobId == jobId)
+                return it->second;
+        }
+        return NULL;
     }
 
     /**
-     * Set new load of the pu.
+     * Get least load PU from queue
      */
-    void LocalLoad::updateLoad(int pu, int newLoad) {
-        load.at(pu) = newLoad;
-    }
-
-    /**
-     * Get pu which have the least load
-     */
-    int LocalLoad::getLeastLoadPU() {
+    int ProbeQueue::getLeastLoadPU() {
         int min = load.at(0);
         int minIndex = 0;
-        for (unsigned int i = 1; i < port.size(); i++) {
-            if (min > load.at(i)) {
+        for (unsigned int i = 1; i < neighs.size(); i++) {
+            if (min > load.at(i) && load.at(i) != -1) {
                 minIndex = i;
                 min = load.at(i);
             }
@@ -90,27 +86,71 @@ namespace fog {
     }
 
     /**
+     * Get least load from queue
+     */
+    int ProbeQueue::getLeastLoad() {
+        int min = load.at(0);
+        for (unsigned int i = 1; i < neighs.size(); i++) {
+            if (min > load.at(i) && load.at(i) != -1) {
+                min = load.at(i);
+            }
+        }
+        return min;
+    }
+
+    LocalLoad::LocalLoad(int nServers) {
+        load.resize(nServers, 0);
+        load.reserve(nServers);
+        lastPu = 0;
+    }
+
+    /**
+     * Set new load of the pu
+     */
+    void LocalLoad::updateLoad(int pu, int newLoad) {
+        load[pu] = newLoad;
+    }
+
+    /**
+     * Get least load PU
+     * @param readOnly: if True, lastPU is not increased
+     */
+    int LocalLoad::getLeastLoadPU(bool readOnly) {
+        int min = load[lastPu];
+        int minIndex = lastPu;
+        for (unsigned int i = lastPu+1; i < load.size()+lastPu; i++) {
+            if (min > load.at(i%load.size())) {
+                minIndex = i%load.size();
+                min = load.at(i%load.size());
+            }
+        }
+        if (!readOnly)
+            lastPu = (minIndex+1)%load.size();
+        return minIndex;
+    }
+
+    /**
      * Get least load value.
      */
     int LocalLoad::getLeastLoad() {
         int min = load.at(0);
-        for (unsigned int i = 1; i < port.size(); i++)
+        for (unsigned int i = 1; i < load.size(); i++)
             if (min > load.at(i))
                 min = load.at(i);
         return min;
     }
 
     /**
-     * Get first pu in idle-
+     * Get first pu in idle
      */
     int LocalLoad::getIdlePU() {
-        for (unsigned int i = 0; i < port.size(); i++)
+        for (unsigned int i = 0; i < load.size(); i++)
             if (load.at(i) == 0)
                 return i;
         return -1;
     }
 
-    //End implementation
+    //------------------------------------------------------------
 
     FogLoadBalancer::FogLoadBalancer() {
         // TODO Auto-generated constructor stub
@@ -120,95 +160,102 @@ namespace fog {
     FogLoadBalancer::~FogLoadBalancer() {
     }
 
+    /**
+     * Initialize variables
+     */
     void FogLoadBalancer::initialize()
         {
             nServers = getNumServers();
-
             localLoad = new LocalLoad(nServers);
 
-            // FIXME: nApps is likely uninitialized!
-            // what is the meaning of this code???
-            //Vettore che dovrebbe tenere le porte di uscita
-            //dei msg di probe. nApps si usava nel vecchio dispatcher
-            //Contiene gli indici dei miei vicini a cui mandare i probe
-            //Posso farci uno shuffle per selezionarne a caso un sotto gruppo di dimensioni fanout
+            // Get neighs number and fill probeGates
             int probeGateSize = gateSize("loadToNeighbor");
             probeGates.resize(probeGateSize);
             for (int i = 0; i < probeGateSize; i++)
                 probeGates[i] = i;
 
-            nJobs=0; // total number of jobs
-            nDroppedJobs = 0; // total number of dropped jobs
-            nDroppedJobsSLA=0; // number of jobs due to SLA violations
-            nLocalJobs=0; // number of jobs sent to the local PU
-            nRemoteJobs=0; // number of jobs forwarded to a remote LB
-            nProbes=0; // number of probe started
-            nProbeQuery=0; // number of probe messages sent
-            nProbeAnswers=0; // number of useful probe answers received
-            queryFanOut=new cOutVector("QueryFanOut"); // for each query we record the fanOut
-            answersPerQuery=new cOutVector("AnswersPerQuery"); // for each query we record how many answers we received before deciding
+            nJobs=0;
+            nInternalJobs=0;
+            nExternalJobs=0;
+            nDroppedJobsSLA=0;
+            nLocalJobs=0;
+            nRemoteJobs=0;
+            nProbes=0;
+            nProbeQuery=0;
+            nProbeAnswers=0;
         }
 
     /**
      * Handle incoming message.
+     * They can be:
+     *  > job
+     *  > loadUpdate
+     *  > probeQuery
+     *  > probeAnswer
      */
     void FogLoadBalancer::handleMessage(cMessage *msg)
         {
-            EV<<msg->getName()<<" arrivato al gate #"<<msg->getArrivalGate()->getIndex();
             //In case incoming msg is a job
             if (strcmp(msg->getName(), "job") == 0) {
                 FogJob *job = check_and_cast<FogJob *>(msg);
+                job->setBalancerCount(job->getBalancerCount()+1);
                 processJob(job);
             }
             //In case incoming msg is a loadUpdate
             else if (strcmp(msg->getName(), "loadUpdate") == 0) {
                 LoadUpdate *loadUpdate = check_and_cast<LoadUpdate *>(msg);
                 handleLoadUpdate(loadUpdate);
-                dropAndDelete(msg);
+                delete msg;
             }
             //In case incoming msg is a probeQuery
             else if (strcmp(msg->getName(), "probeQuery") == 0) {
                 ProbeQuery *probeQuery = check_and_cast<ProbeQuery *>(msg);
                 processProbeQuery(probeQuery);
-                dropAndDelete(msg);
+                delete msg;
             }
             //In case incoming msg is a probeAnswer
             else if (strcmp(msg->getName(), "probeAnswer") == 0) {
                 ProbeAnswer *answer = check_and_cast<ProbeAnswer *>(msg);
                 nProbeAnswersPerClass[answer->getAppId()]++;
-                nProbeAnswers++; //CHECK: cosa si intende per usefull? (vedi commento di questa var in .h)
+                nProbeAnswers++;
                 processProbeAnswer(answer);
-                dropAndDelete(msg);
+                delete msg;
             }
         }
 
     /**
      * Process incoming job.
      *
-     * If SLA is expire and job is flag as real time -> drop it
+     * If SLA is expired and job is flagged as real time -> drop it
      * Otherwise:
-     *      -> If job if from another fog and multihop=false (not allowed forward), send job to an pu
-     *      -> If it can be forwarded, check if i'll do it
+     *      -> If job is from another fog and multihop=false (forward not allowed), send job to a local pu
+     *      -> If it can be forwarded, check if do it (or probing)
      */
     void FogLoadBalancer::processJob(FogJob *job) {
         nJobsPerClass[job->getAppId()]++;
         nJobs++;
+        
+        if (getSource(job) == INTERNAL_JOB)
+            nInternalJobs++;
+        else if (getSource(job) == EXTERNAL_JOB)
+            nExternalJobs++;
 
         if (checkSlaExpired(job)) {
-            nDroppedJobsPerClass[job->getAppId()]++;
             nDroppedJobsSLAPerClass[job->getAppId()]++;
-            nDroppedJobs++;
             nDroppedJobsSLA++;
             dropAndDelete(job);
         }
         else {
+            //If job is from internal, initialize timeStamp to compute balancerTime
+            if (getSource(job) == INTERNAL_JOB)
+                job->setTimestamp();
             //If job is from internal or it's from external and it has multihop flagged
             if (getSource(job) == INTERNAL_JOB ||
                     (getSource(job) == EXTERNAL_JOB && job->getMultiHop())) {
                 if (decideProcessLocally(job)) {
                     processLocally(job);
                 }
-                else { // job not to process locally
+                else { // not to processing locally
                     if (decideStartProbes(job)) {
                         startProbes(job);
                     }
@@ -231,10 +278,9 @@ namespace fog {
 
     /**
      * Handle probe request.
-     * Send my local load.
+     * Send my least local load.
      */
     void FogLoadBalancer::processProbeQuery(ProbeQuery *probeQuery) {
-        // Check if server is free
         nProbeAnswersPerClass[probeQuery->getAppId()]++;
         nProbeAnswers++;
         int nGate = probeQuery->getArrivalGate()->getIndex();
@@ -264,7 +310,7 @@ namespace fog {
         int appId = answer->getAppId();
 
         unsigned int i;
-        //When query with id==queryId isn't still active it will be == null
+        //When query with id==queryId is no longer active it will be == null
         if (probesQueue[queryId] != NULL) {
             for (i = 0; i < probesQueue[queryId]->neighs.size(); i++)
                 if ((probesQueue[queryId]->neighs.at(i)) == fogId)
@@ -272,31 +318,23 @@ namespace fog {
             probesQueue[queryId]->load.at(i) = load;
 
 
-            //If SLA expired, delete job and relative query
-            /*
-             * CHECK: Come recupero un job avendo il jobID?
-             */
-            FogJob *job = NULL;
+            //If SLA is expired, delete job and its query
+            FogJob *job = probesQueue[queryId]->job;
             if (checkSlaExpired(job)) {
                 dropAndDelete(job);
                 probesQueue[queryId] = NULL;
-                nDroppedJobsPerClass[appId]++;
-                nDroppedJobs++;
             }
-            else {
-                //SLA is still ok
-                if (decideForwardNow()) {
+            else {  // SLA is ok
+                if (decideForwardNow(job, queryId)) {
                     //forward to neigh without wait other probes
                     //so delete query
                     probesQueue[queryId] = NULL;
-                    std::vector<int> neighs = getNeighbors(getFanout());
-                    int neigh = selectNeighbor(neighs);
+                    int neigh = probesQueue[queryId]->getLeastLoadPU();
                     forwardJob(job,(char *)"loadToNeighbor" ,neigh);
                     nRemoteJobsPerClass[appId]++;
                     nRemoteJobs++;
                 }
-                else {
-                    //Can we wait for another load?
+                else { //can we wait for another load?
                     //Check if last probe
                     bool lastProbe = true;
                     for (i = 0; i < probesQueue[queryId]->neighs.size(); i++)
@@ -315,9 +353,9 @@ namespace fog {
                             nLocalJobs++;
                         }
                         else {
-                            //forward to neigh
-                            std::vector<int> neighs = getNeighbors(getFanout());
-                            int neigh = selectNeighbor(neighs);
+                            //forward to leastload neigh
+                            int leastLoadNeigh = probesQueue[queryId]->getLeastLoadPU();
+                            int neigh = leastLoadNeigh > -1 ? leastLoadNeigh : 0;
                             forwardJob(job, (char *)"loadToNeighbor", neigh);
                             nRemoteJobsPerClass[appId]++;
                             nRemoteJobs++;
@@ -340,16 +378,16 @@ namespace fog {
     }
 
     /**
-     * To Implement in subclass.
+     * To redefine
      */
     bool FogLoadBalancer::decideStartProbes(FogJob *job) {
         return true;
     }
 
     /**
-     * To implement in subclass
+     * To redefine
      */
-    bool FogLoadBalancer::decideForwardNow() {
+    bool FogLoadBalancer::decideForwardNow(FogJob *job, int queryId) {
         return true;
     }
 
@@ -362,12 +400,15 @@ namespace fog {
     }
 
     /**
-     * Select neighbor which i send job.
+     * Select the neighbor to send the job to
      */
     int FogLoadBalancer::selectNeighbor(std::vector<int> neighs) {
         return 0;
     }
 
+    /**
+     * Handle local load update.
+     */
     void FogLoadBalancer::handleLoadUpdate(LoadUpdate *msg) {
         localLoad->updateLoad(msg->getArrivalGate()->getIndex(), msg->getBusy());
     }
@@ -377,12 +418,13 @@ namespace fog {
     }
 
     /**
-     * Return job arrival gate (from external or internal)
+     * Return job's arrival gate (from external or internal)
      */
     int FogLoadBalancer::getSource(FogJob *job) {
         cGate *gate = job->getArrivalGate();
-        if (strcmp(gate->getName(), "loadFromNeighbor") == 0)
+        if (strcmp(gate->getName(), "loadFromNeighbor") == 0) {
             return EXTERNAL_JOB;
+        }
         return INTERNAL_JOB;
     }
 
@@ -394,10 +436,10 @@ namespace fog {
     }
 
     /**
-     * Return the list of neighs to send probe
+     * Return a list of neighs to send probe to
      */
     std::vector<int> FogLoadBalancer::getNeighbors(int fanout) {
-        //Randomize all neighs vector and return subvector
+        //Randomize the vector containing all neighs and return subvector
         //according with fanout for size
         std::random_shuffle(probeGates.begin(), probeGates.end());
         std::vector<int> neighs;
@@ -409,34 +451,46 @@ namespace fog {
 
     /**
      * Select local PU
-     * Implementa direttamente in coda (classe localLoad)
      */
     int FogLoadBalancer::selectLocalPU() {
-        return localLoad->getLeastLoadPU();
+        return localLoad->getLeastLoadPU(false);
     }
 
     /**
      * Return true if I have to drop job
-     * So, if it is flag as realTime and if SLA expired
+     * So, if it is flag as realTime and if SLA is expired
      */
     bool FogLoadBalancer::checkSlaExpired(FogJob *job) {
         return (job->getRealTime() && !(simTime()<=job->getSlaDeadline()));
     }
 
+    /**
+     * Process job locally.
+     * Select a local pu (with selectLocalPU() function) and send job to it
+     */
     void FogLoadBalancer::processLocally(FogJob *job) {
         int selectPU = selectLocalPU();
         if (selectPU == -1) { selectPU = 0; }
         nLocalJobsPerClass[job->getAppId()]++;
         nLocalJobs++;
+        simtime_t now = simTime();
+        simtime_t ts = job->getTimestamp();
+        job->setBalancerTime(now-ts);
         forwardJob(job, (char *) "out", selectPU);
         //dropAndDelete(job);
     }
 
+    /**
+     * Start probes for this job.
+     * Fill up probeQueue with a new query
+     */
     void FogLoadBalancer::startProbes(FogJob *job) {
-        std::vector<int> neighs = getNeighbors(getFanout());
+        int fanout = getFanout();
+        std::vector<int> neighs = getNeighbors(fanout);
         ProbeQueue::addQuery(neighs, probesQueue, job->getId(), job);
         nProbesPerClass[job->getAppId()]++;
         nProbes++;
+        //Send to neighs a probe request
         for (unsigned int i = 0; i < neighs.size(); i++) {
             nProbeQueryPerClass[job->getAppId()]++;
             nProbeQuery++;
@@ -448,14 +502,45 @@ namespace fog {
         }
     }
 
+    void FogLoadBalancer::dumpStat(std::map<int, int> *map, std::string name){
+        for(std::map<int, int>::iterator i = map->begin(); i != map->end(); ++i){
+            int appId=i->first;
+            int value=i->second;
+            //std::string recname = name + "_appId: " + std::to_string(appId);
+            std::string recname = name + "_" + std::to_string(appId);
+            recordScalar(recname.c_str(), value);
+        }
+    }
+
     void FogLoadBalancer::finish(){
-        // FIXME: save statstics
-        //Just a try
-        recordScalar("#dropped jobs",nDroppedJobs);
-        recordScalar("#process locally",nLocalJobs);
+        /*recordScalar("#process locally",nLocalJobs);
         recordScalar("#process remote",nRemoteJobs);
-        recordScalar("#sended probes",nProbeQuery);
-        recordScalar("#sended answers",nProbeAnswers);
+        recordScalar("#sent probes",nProbeQuery);
+        recordScalar("#sent answers",nProbeAnswers);
+
+        dumpStat(&nJobsPerClass, "#jobs per class");
+        dumpStat(&nRemoteJobsPerClass, "#process remote per class");
+        dumpStat(&nLocalJobsPerClass, "#process locally per class");
+        dumpStat(&nDroppedJobsSLAPerClass, "#dropped jobs sla per class");
+        dumpStat(&nProbesPerClass, "#starting probes per class");
+        dumpStat(&nProbeQueryPerClass, "#sent probes query per class");
+        dumpStat(&nProbeAnswersPerClass, "#sent answers per class");*/
+
+        recordScalar("localJobs",nLocalJobs);
+        recordScalar("internalJobs",nInternalJobs);
+        recordScalar("externalJobs",nExternalJobs);
+        recordScalar("remoteJobs",nRemoteJobs);
+        recordScalar("probeQueries",nProbeQuery);
+        recordScalar("probeAnswers",nProbeAnswers);
+        recordScalar("droppedJobsSLA", nDroppedJobsSLA);
+
+        dumpStat(&nJobsPerClass, "jobs_class");
+        dumpStat(&nRemoteJobsPerClass, "remoteJobs_class");
+        dumpStat(&nLocalJobsPerClass, "localJobs_class");
+        dumpStat(&nDroppedJobsSLAPerClass, "droppedJobsSLA_class");
+        dumpStat(&nProbesPerClass, "probes_class");
+        dumpStat(&nProbeQueryPerClass, "probeQueries_class");
+        dumpStat(&nProbeAnswersPerClass, "probeAnswers_class");
     }
 
     const char *FogLoadBalancer::getAnswerName(){

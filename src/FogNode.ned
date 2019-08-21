@@ -19,10 +19,8 @@ module FogNode
 {
     parameters:
         @display("i=block/network");
-        int nApps;
         int nServers;
         server[*].maxServiceTime = default(-1s);
-        dispatcher.nApps=nApps;
        	//server.fifo=true
        	//server.capacity=-1
     gates:

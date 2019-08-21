@@ -1,0 +1,24 @@
+L'unico che può servire ora è analysis_vec.py e analysis_sca.py (essi importano funzioni da vectorParse e scaParse)
+
+------------------------------------------------
+
+analysis_vec.py prende come parametri la cartella dei file.vec che vogliamo parsare e la cartella dove salvare i file processati (quindi i file uni-colonnari con i valori richiesti) (per ora l'ho testato solo con valori di responseTime, ma se alla riga 57, si aggiunge alla funzione getValues il parametro name=".." si può scegliere un altro valore da prelevare) 
+
+nella cartella dove salviamo i file processati, si assume esista una cartella "plot" dove lo script salva i grafici.png
+
+es. python3 analysis_vec.py results/1serv20cap/ results/plot_vec/1serv20cap/
+
+-------------------------------------------------
+
+analysis_sca.py fa praticamente la stessa cosa, i parametri son gli stessi.
+
+A differenza del _vec, questo è un po piu spartano. Per gestire l'unione dei grafici ho preso un po delle scorciatoie, non è quindi adattabilissimo
+ma si fa
+
+es. python3 analysis_sca.py results/1serv20cap/ results/plot_sca/
+
+-------------------------------------------------
+
+Gli altri script python non credo le serviranno ma comunque sono commentati.
+
+Anche gli analysis_* sono internamente commentati.

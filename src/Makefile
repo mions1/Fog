@@ -35,9 +35,10 @@ OBJS = \
     $O/CloudDelayCenter.o \
     $O/FogDispatcherLoad.o \
     $O/FogDispatcherRR.o \
+    $O/FogLBNoBalancing.o \
     $O/FogLoadBalancer.o \
+    $O/FogParallelProbing.o \
     $O/FogPU.o \
-    $O/FogPUTS.o \
     $O/FogSequentialForwarding.o \
     $O/FogSink.o \
     $O/FogSource.o \

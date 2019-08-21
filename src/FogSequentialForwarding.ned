@@ -23,8 +23,8 @@ simple FogSequentialForwarding
     
     parameters:
         int fanOut;
-        int nApps;
-        @display("i=block/fork");
+        int thr = default(1);
+	@display("i=block/fork");
         
     gates:
         input in[];

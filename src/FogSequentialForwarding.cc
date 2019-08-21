@@ -17,35 +17,54 @@
 #include "FogSequentialForwarding.h"
 #include "FogJob_m.h"
 
+
+/**
+ * Sequential Forward:
+ *  > If local load is greater than the threshold, forward job to a random neigh
+ *  > else, process it locally
+ */
 namespace fog {
 
-
+    Define_Module(FogSequentialForwarding);
     FogSequentialForwarding::FogSequentialForwarding() {
         // TODO Auto-generated constructor stub
-
     }
 
     FogSequentialForwarding::~FogSequentialForwarding() {
         // TODO Auto-generated destructor stub
     }
 
-    bool FogSequentialForwarding::decideProcessLocally(FogJob *job) {
-        int pu = FogLoadBalancer::localLoad->getLeastLoadPU();
-        int thr = par("THR");
-        return (FogLoadBalancer::localLoad->load.at(pu) < thr);
+    void FogSequentialForwarding::initialize() {
+        FogLoadBalancer::initialize();
+        thr = par("thr");
     }
 
+    /**
+     * Check if localLoad is less than thr
+     */
+    bool FogSequentialForwarding::decideProcessLocally(FogJob *job) {
+        return (FogLoadBalancer::localLoad->getLeastLoad() < thr);
+    }
+
+    /**
+     * Never start probes
+     */
     bool FogSequentialForwarding::decideStartProbes(FogJob *job) {
         return false;
     }
 
+    /**
+     * Just one neigh
+     */
     int FogSequentialForwarding::getFanout() {
-        return 0;
+        return 1;
     }
 
+    /**
+     * A random neigh
+     */
     int FogSequentialForwarding::selectNeighbor(std::vector<int> neighbors) {
-        std::random_shuffle(FogLoadBalancer::probeGates.begin(), FogLoadBalancer::probeGates.end());
-        return (FogLoadBalancer::probeGates.at(0));
+        return (neighbors.at(0));
     }
 
     bool FogSequentialForwarding::decideForwardNow() {
